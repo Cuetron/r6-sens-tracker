@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import BackButton from '@/app/components/BackButton';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -36,8 +37,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
 
         {/* Center Links with Regions added and proper absolute centering */}
         <div className="flex space-x-12 uppercase tracking-widest text-sm font-semibold absolute left-1/2 transform -translate-x-1/2">
-          <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
-          <Link href="/database" className="text-gray-300 hover:text-white transition-colors">Pro Database</Link>
+          <Link href="/" className="text-gray-300 hover:text-white transition-colors">Database</Link>
           <Link href="/regions" className="text-gray-300 hover:text-white transition-colors">Regions</Link>
           <Link href="/about" className="text-gray-300 hover:text-white transition-colors">About & Contact</Link>
         </div>
@@ -49,9 +49,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         
         {/* --- BACK SHORTCUT --- */}
         <div className="mb-8">
-          <Link href="/database" className="text-[#5ce1e6] hover:text-white uppercase tracking-widest text-sm font-bold transition-colors">
-            ← Back to Pro Database
-          </Link>
+          <BackButton />
         </div>
 
         {/* --- HEADER SECTION --- */}

@@ -13,8 +13,7 @@ export default function AboutContact() {
 
         {/* Center Links */}
         <div className="flex space-x-12 uppercase tracking-widest text-sm font-semibold absolute left-1/2 transform -translate-x-1/2">
-          <Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
-          <Link href="/database" className="text-gray-300 hover:text-white transition-colors">Pro Database</Link>
+          <Link href="/" className="text-gray-300 hover:text-white transition-colors">Database</Link>
           <Link href="/regions" className="text-gray-300 hover:text-white transition-colors">Regions</Link>
           {/* FIXED: Added the active white underline to the About link */}
           <Link href="/about" className="hover:text-gray-300 border-b-2 border-white pb-1">About & Contact</Link>
@@ -117,7 +116,7 @@ export default function AboutContact() {
 
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-gray-300 font-mono text-lg tracking-widest">
             <span className="hover:text-[#5ce1e6] transition-colors cursor-default">@Quetron</span>
-            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">@Eaglemas</span>
+            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">@Eaglemees</span>
             <span className="hover:text-[#5ce1e6] transition-colors cursor-default">The R6 Community</span>
           </div>
         </div>
