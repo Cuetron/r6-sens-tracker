@@ -9,22 +9,32 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export default async function Home({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ q?: string; team?: string }> 
+  searchParams: Promise<{ q?: string; team?: string; region?: string }> 
 }) {
   const params = await searchParams;
   const searchQuery = params.q || '';
   const teamFilter = params.team || '';
+  const regionFilter = params.region || ''; // --- ADDED REGION FILTER PARAMETER
 
-  // --- FETCH UNIQUE TEAMS ---
-  const { data: teamData } = await supabase.from('Players').select('team');
+  // --- FETCH UNIQUE TEAMS & REGIONS ---
+  // We grab both columns at once to make the page load faster
+  const { data: filterData } = await supabase.from('Players').select('team, region');
+  
   const uniqueTeams = Array.from(
-    new Set(teamData?.map(p => p.team).filter(Boolean))
+    new Set(filterData?.map(p => p.team).filter(Boolean))
+  ).sort();
+  
+  const uniqueRegions = Array.from(
+    new Set(filterData?.map(p => p.region).filter(Boolean))
   ).sort();
 
   // --- BUILD THE MAIN QUERY ---
   let query = supabase.from('Players').select('*').order('name', { ascending: true });
+  
   if (searchQuery) query = query.ilike('name', `%${searchQuery}%`);
   if (teamFilter) query = query.eq('team', teamFilter);
+  // We use ilike for regions to prevent case-sensitive crashes (e.g., 'NA' vs 'na')
+  if (regionFilter) query = query.ilike('region', regionFilter); 
   
   const { data: players, error } = await query;
   if (error) console.error("Error fetching players:", error.message);
@@ -56,7 +66,6 @@ export default async function Home({
         </nav>
 
         {/* --- HERO SECTION --- */}
-        {/* CHANGED: min-h-[80vh] is now min-h-[60vh] to reduce the gap */}
         <header className="flex flex-col items-center justify-center min-h-[60vh] px-12 text-center pt-8 pb-12">
           <h1 className="text-[8rem] leading-[0.85] font-black uppercase tracking-tighter mb-8">
             Master<br />
@@ -66,9 +75,10 @@ export default async function Home({
             The definitive, centralized hub for Rainbow Six Siege professional configurations.
           </p>
           
-          {/* SEARCH BAR WIDGET (Button Removed) */}
+          {/* SEARCH BAR WIDGET */}
           <div className="flex flex-col items-center mt-4">
-            <PlayerFilters teams={uniqueTeams} />
+            {/* We now pass BOTH teams and regions into the component */}
+            <PlayerFilters teams={uniqueTeams} regions={uniqueRegions} />
           </div>
         </header>
 
@@ -94,7 +104,10 @@ export default async function Home({
                     {player.name}
                   </span>
                 </div>
-                <span className="text-gray-400 text-xl tracking-wide uppercase">
+                
+                {/* Updated this span to show both REGION and TEAM next to each other */}
+                <span className="text-gray-400 text-xl tracking-wide uppercase text-right">
+                  <span className="text-gray-600 mr-4">{player.region}</span> 
                   {player.team}
                 </span>
               </Link>
