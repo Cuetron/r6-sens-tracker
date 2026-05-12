@@ -100,7 +100,14 @@ export default function AboutContact() {
 
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-gray-300 font-mono text-lg tracking-widest">
             <span className="hover:text-[#5ce1e6] transition-colors cursor-default">@Quetron</span>
-            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">@Eaglemees</span>
+              <a 
+                href="https://twitter.com/Eaglemees" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-[#5ce1e6] transition-colors cursor-pointer"
+              >
+                @Eaglemees
+              </a>
             <span className="hover:text-[#5ce1e6] transition-colors cursor-default">The R6 Community</span>
           </div>
         </div>
