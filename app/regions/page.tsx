@@ -7,7 +7,7 @@ export default function RegionsDirectory() {
     { id: 'NA', name: 'North America', logo: '/naLogo.png' },
     { id: 'EU', name: 'Europe', logo: '/euLogo.png' },
     { id: 'SA', name: 'South America', logo: '/saLogo.png' },
-    { id: 'APAC', name: 'Asia-Pacific', logo: null } 
+    { id: 'APAC', name: 'Asia-Pacific', logo: '/apacLogo.png' } 
   ];
 
   return (

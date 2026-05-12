@@ -12,7 +12,8 @@ const supabase = createClient(
 const regionLogos: Record<string, string> = {
   'NA': '/naLogo.png',
   'EU': '/euLogo.png',
-  'SA': '/saLogo.png'
+  'SA': '/saLogo.png',
+  'APAC' : '/apacLogo.png'
 };
 
 export default async function RegionTeams({ params }: { params: { region: string } }) {
