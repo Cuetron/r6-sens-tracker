@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import PlayerFilters from './components/PlayerFilters';
+import NavBar from '@/app/components/NavBar';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -49,21 +50,7 @@ export default async function Home({
 
       <div className="relative z-10 flex flex-col">
         
-        {/* --- STICKY NAVIGATION BAR --- */}
-        <nav className="sticky top-0 z-50 flex items-center justify-between px-12 py-6 bg-[#09090b]/80 backdrop-blur-md border-b border-gray-800">
-          <Link href="/" className="flex items-center border-2 border-white px-4 py-2 cursor-pointer">
-            <div className="w-4 h-4 bg-white mr-2"></div>
-            <span className="font-bold tracking-widest text-lg uppercase">Logo</span>
-          </Link>
-
-          <div className="flex space-x-12 uppercase tracking-widest text-sm font-semibold absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/" className="hover:text-gray-300 border-b-2 border-white pb-1">Database</Link>
-            <Link href="/regions" className="text-gray-300 hover:text-white transition-colors">Regions</Link>
-            <Link href="/about" className="text-gray-300 hover:text-white transition-colors">About & Contact</Link>
-          </div>
-          
-          <div className="w-[120px]"></div> 
-        </nav>
+        <NavBar />
 
         {/* --- HERO SECTION --- */}
         <header className="flex flex-col items-center justify-center min-h-[60vh] px-12 text-center pt-8 pb-12">

@@ -1,11 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import NavBar from '@/app/components/NavBar';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+// Dictionary to map the URL region to the correct logo file
+const regionLogos: Record<string, string> = {
+  'NA': '/naLogo.png',
+  'EU': '/euLogo.png',
+  'SA': '/saLogo.png'
+};
 
 export default async function RegionTeams({ params }: { params: { region: string } }) {
   const { region } = await params;
@@ -19,17 +27,13 @@ export default async function RegionTeams({ params }: { params: { region: string
   if (error || !data) notFound();
 
   const uniqueTeams = Array.from(new Set(data.map(p => p.team).filter(Boolean))).sort();
+  
+  // Grab the logo if it exists in our dictionary
+  const logoUrl = regionLogos[decodedRegion];
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white font-sans pb-32">
-      <nav className="flex items-center justify-between px-12 py-8 relative z-10 mb-12 border-b border-gray-900">
-        <Link href="/" className="flex items-center border-2 border-white px-4 py-2"><div className="w-4 h-4 bg-white mr-2"></div><span className="font-bold tracking-widest text-lg uppercase">Logo</span></Link>
-        <div className="flex space-x-12 uppercase tracking-widest text-sm font-semibold absolute left-1/2 transform -translate-x-1/2">
-          <Link href="/" className="text-gray-300 hover:text-white">Database</Link>
-          <Link href="/regions" className="border-b-2 border-white pb-1">Regions</Link>
-          <Link href="/about" className="text-gray-300 hover:text-white">About & Contact</Link>
-        </div>
-      </nav>
+      <NavBar />
 
       <main className="max-w-6xl mx-auto px-12">
         
@@ -40,7 +44,20 @@ export default async function RegionTeams({ params }: { params: { region: string
           <span className="text-white">{decodedRegion}</span>
         </div>
 
-        <h1 className="text-[5rem] font-black uppercase tracking-tighter mb-6">{decodedRegion} Teams</h1>
+        {/* --- HEADER WITH OPTIONAL LOGO --- */}
+        <div className="flex items-center gap-8 mb-6">
+          {logoUrl && (
+            <img 
+              src={logoUrl} 
+              alt={`${decodedRegion} Logo`} 
+              className="h-24 w-auto object-contain drop-shadow-[0_0_12px_rgba(92,225,230,0.4)]" 
+            />
+          )}
+          <h1 className="text-[5rem] font-black uppercase tracking-tighter leading-none">
+            {decodedRegion} Teams
+          </h1>
+        </div>
+
         <div className="w-full h-[2px] bg-[#5ce1e6] mb-12 shadow-[0_0_10px_rgba(92,225,230,0.5)]"></div>
 
         <div className="flex flex-col">

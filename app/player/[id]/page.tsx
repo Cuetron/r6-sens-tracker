@@ -2,48 +2,43 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BackButton from '@/app/components/BackButton';
+import NavBar from '@/app/components/NavBar';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// In Next.js, this 'params' object automatically grabs the [id] from the URL
 export default async function PlayerProfile({ params }: { params: { id: string } }) {
-  
-  // Await the params to ensure compatibility with Next.js 15+
   const { id } = await params;
 
   // Fetch the single player matching the ID
+  // Note: Make sure 'updated_at' is added to your Supabase table like we discussed!
   const { data: player, error } = await supabase
     .from('Players')
     .select('*')
     .eq('id', id)
     .single();
 
-  // If someone types a random ID in the URL, show a 404 page
   if (error || !player) {
     notFound();
   }
 
+  // --- TIMESTAMP FORMATTING ---
+  // We check if updated_at exists (in case older players don't have it yet)
+  // Otherwise we fall back to created_at
+  const dateToFormat = player.updated_at || player.created_at;
+  const formattedDate = dateToFormat 
+    ? new Date(dateToFormat).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : "Date Unknown";
+
   return (
     <div className="min-h-screen bg-[#09090b] text-white font-sans selection:bg-[#5ce1e6] selection:text-black pb-32">
       
-      {/* --- NAVIGATION BAR --- */}
-      <nav className="flex items-center justify-between px-12 py-8 relative z-10 border-b border-gray-900 mb-12">
-        <Link href="/" className="flex items-center border-2 border-white px-4 py-2 cursor-pointer">
-          <div className="w-4 h-4 bg-white mr-2"></div>
-          <span className="font-bold tracking-widest text-lg uppercase">Logo</span>
-        </Link>
-
-        {/* Center Links with Regions added and proper absolute centering */}
-        <div className="flex space-x-12 uppercase tracking-widest text-sm font-semibold absolute left-1/2 transform -translate-x-1/2">
-          <Link href="/" className="text-gray-300 hover:text-white transition-colors">Database</Link>
-          <Link href="/regions" className="text-gray-300 hover:text-white transition-colors">Regions</Link>
-          <Link href="/about" className="text-gray-300 hover:text-white transition-colors">About & Contact</Link>
-        </div>
-        
-        <div className="w-[120px]"></div> 
-      </nav>
+      <NavBar />
 
       <main className="max-w-5xl mx-auto px-12">
         
@@ -72,40 +67,40 @@ export default async function PlayerProfile({ params }: { params: { id: string }
           
           <div className="w-full h-[2px] bg-[#5ce1e6] mb-8 shadow-[0_0_10px_rgba(92,225,230,0.5)]"></div>
 
-          {/* Stats List */}
           <div className="flex flex-col">
-            
-            {/* Row 1: Darker background */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-6 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Sensitivity</span>
               <span className="text-xl tracking-wide">{player.Sensitivity}, {player.Sensitivity}</span>
             </div>
 
-            {/* Row 2: Lighter background */}
             <div className="flex justify-between items-center bg-[#09090b] px-8 py-6 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">ADS (1X, 2.5X)</span>
               <span className="text-xl tracking-wide">{player["ADS (1x)"]}, {player["ADS (2.5)"]}</span>
             </div>
 
-            {/* Row 3 */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-6 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">DPI</span>
               <span className="text-xl tracking-wide">{player.DPI}</span>
             </div>
 
-            {/* Row 4 */}
             <div className="flex justify-between items-center bg-[#09090b] px-8 py-6 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Mouse Multiplier</span>
               <span className="text-xl tracking-wide">{player["Mouse Multiplier"]}</span>
             </div>
 
-            {/* Row 5 */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-6 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Aspect Ratio & FOV</span>
               <span className="text-xl tracking-wide">{player["Aspect Ratio"]} {player.FOV}</span>
             </div>
-
           </div>
+        </div>
+
+        {/* --- LAST UPDATED TIMESTAMP (NEW) --- */}
+        <div className="mt-16 pt-8 border-t border-gray-900 flex justify-center">
+          <p className="text-gray-500 text-sm font-mono tracking-widest uppercase flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-[#5ce1e6] shadow-[0_0_8px_rgba(92,225,230,0.8)] animate-pulse"></span>
+            Last Updated: {formattedDate}
+          </p>
         </div>
 
       </main>
