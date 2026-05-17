@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import PlayerFilters from './components/PlayerFilters';
 import NavBar from '@/app/components/NavBar';
+import ContactWidget from './components/ContactWidget';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -107,7 +108,7 @@ export default async function Home({
             )}
           </div>
         </main>
-
+        <ContactWidget />
       </div>
     </div>
   );

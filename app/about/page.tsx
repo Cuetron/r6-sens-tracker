@@ -35,55 +35,34 @@ export default function AboutContact() {
             <div className="mt-12">
               <h3 className="text-[#5ce1e6] text-xl font-bold uppercase tracking-widest mb-4">Direct Lines</h3>
               <ul className="space-y-4 text-gray-300 tracking-wider">
-                <li><span className="font-bold text-white mr-2">DISCORD:</span> @yourhandle</li>
-                <li><span className="font-bold text-white mr-2">TWITTER/X:</span> @yourhandle</li>
-                <li><span className="font-bold text-white mr-2">EMAIL:</span> contact@r6sens.com</li>
+                <li>
+                  <span className="font-bold text-white mr-2">TWITTER/X:</span> 
+                  <a href="https://twitter.com/benett_plesha" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                    @Benett
+                  </a>
+                </li>
+                {/* Add Discord or Email back here if you want to include them alongside the widget later! */}
               </ul>
             </div>
           </div>
 
-          {/* RIGHT SIDE: Contact Form */}
-          <div className="bg-[#18181b] p-10 border border-gray-800">
-            <h2 className="text-2xl font-bold uppercase tracking-widest mb-8">Send a Message</h2>
-            
-            <form className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label htmlFor="name" className="text-xs uppercase tracking-widest text-gray-500 font-bold">Operator Name</label>
-                <input 
-                  type="text" 
-                  id="name"
-                  className="bg-[#09090b] text-white px-4 py-3 border border-gray-700 focus:outline-none focus:border-[#5ce1e6] transition-colors uppercase text-sm tracking-wider"
-                  placeholder="ENTER NAME"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label htmlFor="email" className="text-xs uppercase tracking-widest text-gray-500 font-bold">Transmission Link (Email)</label>
-                <input 
-                  type="email" 
-                  id="email"
-                  className="bg-[#09090b] text-white px-4 py-3 border border-gray-700 focus:outline-none focus:border-[#5ce1e6] transition-colors uppercase text-sm tracking-wider"
-                  placeholder="ENTER EMAIL"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label htmlFor="message" className="text-xs uppercase tracking-widest text-gray-500 font-bold">Intel (Message)</label>
-                <textarea 
-                  id="message"
-                  rows={5}
-                  className="bg-[#09090b] text-white px-4 py-3 border border-gray-700 focus:outline-none focus:border-[#5ce1e6] transition-colors text-sm tracking-wider resize-none"
-                  placeholder="What updates or corrections do you have?"
-                ></textarea>
-              </div>
-
-              <button 
-                type="button" 
-                className="mt-4 bg-[#5ce1e6] text-black font-black uppercase tracking-widest text-xl px-8 py-4 hover:bg-white transition-colors duration-300"
-              >
-                Transmit
-              </button>
-            </form>
+          {/* RIGHT SIDE: Fair Use & Copyright (Replaced the Form) */}
+          <div>
+            <h2 className="text-3xl font-bold uppercase tracking-widest mb-6">Fair Use Policy</h2>
+            <div className="bg-[#18181b] p-8 border border-gray-800 text-gray-400 space-y-6 text-base tracking-wide font-light">
+              <p>
+                This database utilizes team logos, league branding, and related esports imagery under the doctrine of Fair Use. 
+              </p>
+              <p>
+                All images are used strictly for informational, educational, and identification purposes within the Rainbow Six Siege esports ecosystem. These images are web-resolution copies that do not impede the original copyright holders' ability to use or profit from their intellectual property. No free alternative exists that would serve the same documentary purpose.
+              </p>
+              <p>
+                All copyrights and trademarks belong to their respective owners, including <span className="text-white font-medium">Ubisoft</span>, tournament organizers, and individual esports organizations. 
+              </p>
+              <p className="text-sm border-t border-gray-800 pt-4 mt-4">
+                Much of our foundational organizational data and base imagery is sourced with appreciation from the contributors at <a href="https://liquipedia.net/rainbowsix/" target="_blank" rel="noopener noreferrer" className="text-[#5ce1e6] hover:underline font-bold">Liquipedia</a>.
+              </p>
+            </div>
           </div>
         </div>
         {/* --- END 2-COLUMN GRID SECTION --- */}
@@ -99,16 +78,25 @@ export default function AboutContact() {
           </p>
 
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-gray-300 font-mono text-lg tracking-widest">
-            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">@Quetron</span>
-              <a 
-                href="https://twitter.com/Eaglemees" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-[#5ce1e6] transition-colors cursor-pointer"
-              >
-                @Eaglemees
-              </a>
-            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">The R6 Community</span>
+            <a 
+              href="https://twitter.com/itsQuetron" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-[#5ce1e6] transition-colors cursor-pointer"
+            >
+              @itsQuetron
+            </a>
+            <a 
+              href="https://twitter.com/Eaglemees" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-[#5ce1e6] transition-colors cursor-pointer"
+            >
+              @Eaglemees
+            </a>
+            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">
+              The R6 Community
+            </span>
           </div>
         </div>
 
