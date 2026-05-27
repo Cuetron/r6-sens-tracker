@@ -73,55 +73,69 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         </div>
 
         {/* --- HEADER SECTION --- */}
-        <div className="mb-24">
-          <h1 className="text-[7rem] leading-[0.85] font-black uppercase tracking-tighter mb-4">
-            {player.name}'S<br />
-            PLAYER<br />
-            CONFIG
+        {/* Cleaned up header structure: just the clean title and the cyan/blue sub-label */}
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
+            {player.name}'s Configuration
           </h1>
-          <p className="text-[#5ce1e6] text-xl font-light tracking-wide">
-            Rainbow Six Siege pro settings overview
+          <p className="text-[#5ce1e6] text-lg font-bold uppercase tracking-widest">
+            Full Settings
           </p>
         </div>
 
         {/* --- FULL CONFIGURATION TABLE --- */}
         <div>
-          <h2 className="text-6xl font-black uppercase tracking-tighter mb-6">
-            Full Configuration
-          </h2>
-          
           <div className="w-full h-[2px] bg-[#5ce1e6] mb-8 shadow-[0_0_10px_rgba(92,225,230,0.5)]"></div>
 
-          <div className="flex flex-col">
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-6 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Sensitivity</span>
-              <span className="text-xl tracking-wide">{player.Sensitivity}, {player.Sensitivity}</span>
+          {/* All row paddings at py-4 for a sleeker profile layout */}
+          <div className="flex flex-col border border-gray-800/40 rounded-lg overflow-hidden">
+            
+            {/* Row 1: Sensitivity */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Sensitivity</span>
+              <span className="text-lg tracking-wide">{player.Sensitivity}, {player.Sensitivity}</span>
             </div>
 
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-6 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">ADS (1X, 2.5X)</span>
-              <span className="text-xl tracking-wide">{player["ADS (1x)"]}, {player["ADS (2.5)"]}</span>
+            {/* Row 2: ADS 1x */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">ADS 1X</span>
+              <span className="text-lg tracking-wide">{player["ADS (1x)"] || "N/A"}</span>
             </div>
 
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-6 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">DPI</span>
-              <span className="text-xl tracking-wide">{player.DPI}</span>
+            {/* Row 3: ADS 2.5x */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">ADS 2.5X</span>
+              <span className="text-lg tracking-wide">{player["ADS (2.5)"] || "N/A"}</span>
             </div>
 
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-6 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Mouse Multiplier</span>
-              <span className="text-xl tracking-wide">{player["Mouse Multiplier"]}</span>
+            {/* Row 4: DPI */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">DPI</span>
+              <span className="text-lg tracking-wide">{player.DPI}</span>
             </div>
 
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-6 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Aspect Ratio & FOV</span>
-              <span className="text-xl tracking-wide">{player["Aspect Ratio"]} {player.FOV}</span>
+            {/* Row 5: Mouse Multiplier */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse Multiplier</span>
+              <span className="text-lg tracking-wide">{player["Mouse Multiplier"]}</span>
             </div>
 
-            {/* --- NEW HARDWARE ROW --- */}
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-6 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Mouse</span>
-              <span className="text-xl tracking-wide">{player.mouse || player.Mouse || "N/A"}</span>
+            {/* Row 6: Aspect Ratio */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Aspect Ratio</span>
+              <span className="text-lg tracking-wide">{player["Aspect Ratio"]}</span>
+            </div>
+
+            {/* Row 7: FOV */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">FOV</span>
+              <span className="text-lg tracking-wide">{player.FOV}</span>
+            </div>
+
+            {/* Row 8: Mouse Hardware */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse</span>
+              <span className="text-lg tracking-wide">{player.mouse || player.Mouse || "N/A"}</span>
             </div>
             
           </div>
