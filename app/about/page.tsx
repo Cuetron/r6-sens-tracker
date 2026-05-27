@@ -38,14 +38,14 @@ export default function AboutContact() {
                 <li className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
                   <span className="font-bold text-white">TWITTER/X:</span> 
                   <div className="flex flex-wrap gap-6 font-mono text-sm">
+                    <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                      @Eaglemees
+                    </a>
                     <a href="https://twitter.com/benett_plesha" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
                       @Benett
                     </a>
                     <a href="https://twitter.com/itsQuetron" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
                       @itsQuetron
-                    </a>
-                    <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                      @Eaglemees
                     </a>
                   </div>
                 </li>
