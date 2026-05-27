@@ -38,14 +38,14 @@ export default function AboutContact() {
                 <li className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
                   <span className="font-bold text-white">TWITTER/X:</span> 
                   <div className="flex flex-wrap gap-6 font-mono text-sm">
-                    <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                      @Eaglemees
-                    </a>
                     <a href="https://twitter.com/benett_plesha" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
                       @Benett
                     </a>
                     <a href="https://twitter.com/itsQuetron" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
                       @itsQuetron
+                    </a>
+                    <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                      @Eaglemees
                     </a>
                   </div>
                 </li>
@@ -87,13 +87,21 @@ export default function AboutContact() {
         {/* --- END 2-COLUMN GRID SECTION --- */}
 
         {/* --- SPECIAL THANKS SECTION (FULL WIDTH) --- */}
-        <div className="mt-32 border-t border-gray-800 pt-16 text-center">
-          <h2 className="text-2xl font-black uppercase tracking-widest text-white mb-8">
+        <div className="mt-32 border-t border-gray-800 pt-16 max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-black uppercase tracking-widest text-white mb-10">
             Special Thanks
           </h2>
+
+          {/* New Pro Player Shoutout Box */}
+          <div className="bg-[#18181b] p-8 rounded-lg border border-gray-800 mb-12 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+            <h3 className="text-[#5ce1e6] text-xl font-bold uppercase tracking-widest mb-4">The Competitors</h3>
+            <p className="text-gray-400 text-lg tracking-wide font-light leading-relaxed">
+              A massive thank you to the Rainbow Six Siege professional players and creators who have personally reached out to share and update their configurations. Your willingness to be transparent directly fuels this database and helps bridge the gap between the highest tier of competitive play and the community.
+            </p>
+          </div>
           
           <p className="text-gray-500 mb-8 text-sm uppercase tracking-widest">
-            To those who helped make this database
+            And to everyone who helped make this tracker possible:
           </p>
 
           <div className="flex justify-center text-[#5ce1e6] font-mono text-2xl tracking-widest font-bold">
