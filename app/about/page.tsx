@@ -35,11 +35,19 @@ export default function AboutContact() {
             <div className="mt-12">
               <h3 className="text-[#5ce1e6] text-xl font-bold uppercase tracking-widest mb-4">Direct Lines</h3>
               <ul className="space-y-4 text-gray-300 tracking-wider">
-                <li>
-                  <span className="font-bold text-white mr-2">TWITTER/X:</span> 
-                  <a href="https://twitter.com/benett_plesha" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                    @Benett
-                  </a>
+                <li className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+                  <span className="font-bold text-white">TWITTER/X:</span> 
+                  <div className="flex flex-wrap gap-6 font-mono text-sm">
+                    <a href="https://twitter.com/benett_plesha" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                      @Benett
+                    </a>
+                    <a href="https://twitter.com/itsQuetron" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                      @itsQuetron
+                    </a>
+                    <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                      @Eaglemees
+                    </a>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -88,24 +96,8 @@ export default function AboutContact() {
             To those who helped make this database
           </p>
 
-          <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-gray-300 font-mono text-lg tracking-widest">
-            <a 
-              href="https://twitter.com/itsQuetron" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-[#5ce1e6] transition-colors cursor-pointer"
-            >
-              @itsQuetron
-            </a>
-            <a 
-              href="https://twitter.com/Eaglemees" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:text-[#5ce1e6] transition-colors cursor-pointer"
-            >
-              @Eaglemees
-            </a>
-            <span className="hover:text-[#5ce1e6] transition-colors cursor-default">
+          <div className="flex justify-center text-[#5ce1e6] font-mono text-2xl tracking-widest font-bold">
+            <span className="cursor-default shadow-[0_0_15px_rgba(92,225,230,0.3)] px-6 py-3 rounded-lg border border-[#5ce1e6]/30 bg-[#5ce1e6]/5">
               The R6 Community
             </span>
           </div>
