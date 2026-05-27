@@ -41,15 +41,16 @@ export default function AboutContact() {
                     @Benett
                   </a>
                 </li>
-                {/* Add Discord or Email back here if you want to include them alongside the widget later! */}
               </ul>
             </div>
           </div>
 
-          {/* RIGHT SIDE: Fair Use & Copyright (Replaced the Form) */}
+          {/* RIGHT SIDE: Fair Use, Copyright & Data Policy */}
           <div>
-            <h2 className="text-3xl font-bold uppercase tracking-widest mb-6">Fair Use Policy</h2>
+            <h2 className="text-3xl font-bold uppercase tracking-widest mb-6">Legal & Fair Use</h2>
             <div className="bg-[#18181b] p-8 border border-gray-800 text-gray-400 space-y-6 text-base tracking-wide font-light">
+              
+              {/* Copyright Info */}
               <p>
                 This database utilizes team logos, league branding, and related esports imagery under the doctrine of Fair Use. 
               </p>
@@ -59,7 +60,17 @@ export default function AboutContact() {
               <p>
                 All copyrights and trademarks belong to their respective owners, including <span className="text-white font-medium">Ubisoft</span>, tournament organizers, and individual esports organizations. 
               </p>
-              <p className="text-sm border-t border-gray-800 pt-4 mt-4">
+
+              {/* NEW SECTION: Data Usage & Non-Profit Status */}
+              <div className="border-t border-gray-800 pt-6 mt-6">
+                <h3 className="text-white text-lg font-bold uppercase tracking-widest mb-3">Non-Profit & Data Usage</h3>
+                <p>
+                  The R6 Sensitivity Tracker is a strictly non-profit initiative built by the community, for the community, with no intention of monetization. However, the unauthorized scraping, mass-copying, or redistribution of our curated settings data to populate other websites, trackers, or commercial services is strictly prohibited.
+                </p>
+              </div>
+
+              {/* Credits */}
+              <p className="text-sm border-t border-gray-800 pt-6 mt-6">
                 Much of our foundational organizational data and base imagery is sourced with appreciation from the contributors at <a href="https://liquipedia.net/rainbowsix/" target="_blank" rel="noopener noreferrer" className="text-[#5ce1e6] hover:underline font-bold">Liquipedia</a>.
               </p>
             </div>
