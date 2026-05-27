@@ -40,7 +40,6 @@ export default async function PlayerProfile({ params }: { params: { id: string }
   const { id } = await params;
 
   // Fetch the single player matching the ID
-  // Note: Make sure 'updated_at' is added to your Supabase table like we discussed!
   const { data: player, error } = await supabase
     .from('Players')
     .select('*')
@@ -52,8 +51,6 @@ export default async function PlayerProfile({ params }: { params: { id: string }
   }
 
   // --- TIMESTAMP FORMATTING ---
-  // We check if updated_at exists (in case older players don't have it yet)
-  // Otherwise we fall back to created_at
   const dateToFormat = player.updated_at || player.created_at;
   const formattedDate = dateToFormat 
     ? new Date(dateToFormat).toLocaleDateString('en-US', {
@@ -120,10 +117,17 @@ export default async function PlayerProfile({ params }: { params: { id: string }
               <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Aspect Ratio & FOV</span>
               <span className="text-xl tracking-wide">{player["Aspect Ratio"]} {player.FOV}</span>
             </div>
+
+            {/* --- NEW HARDWARE ROW --- */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-6 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-lg font-semibold tracking-wider uppercase">Mouse</span>
+              <span className="text-xl tracking-wide">{player.mouse || player.Mouse || "N/A"}</span>
+            </div>
+            
           </div>
         </div>
 
-        {/* --- LAST UPDATED TIMESTAMP (NEW) --- */}
+        {/* --- LAST UPDATED TIMESTAMP --- */}
         <div className="mt-16 pt-8 border-t border-gray-900 flex justify-center">
           <p className="text-gray-500 text-sm font-mono tracking-widest uppercase flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-[#5ce1e6] shadow-[0_0_8px_rgba(92,225,230,0.8)] animate-pulse"></span>
