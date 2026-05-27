@@ -73,7 +73,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         </div>
 
         {/* --- HEADER SECTION --- */}
-        <div className="mb-12">
+        <div className="mb-4">
           <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
             {player.name}'s Configuration
           </h1>
