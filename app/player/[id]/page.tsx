@@ -3,10 +3,38 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import BackButton from '@/app/components/BackButton';
 import NavBar from '@/app/components/NavBar';
+import type { Metadata } from 'next';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// This Next.js function runs BEFORE the page loads to generate the Discord/Google tags
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const { id } = await params;
+
+  // Quickly ask Supabase for just the player's name and team
+  const { data: player } = await supabase
+    .from('Players')
+    .select('name, team')
+    .eq('id', id)
+    .single();
+
+  // If the player isn't found, fallback to default
+  if (!player) {
+    return { title: 'Player Not Found' };
+  }
+
+  // Return the custom Discord card info!
+  return {
+    title: `${player.name}'s Settings`,
+    description: `View ${player.name}'s updated Rainbow Six Siege sensitivity, DPI, and aspect ratio on the R6 Sens Tracker.`,
+    openGraph: {
+      title: `${player.name} (${player.team}) | R6 Settings`,
+      description: `View ${player.name}'s updated Rainbow Six Siege sensitivity, DPI, and aspect ratio.`,
+    }
+  };
+}
 
 export default async function PlayerProfile({ params }: { params: { id: string } }) {
   const { id } = await params;

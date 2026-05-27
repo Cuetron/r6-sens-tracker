@@ -13,8 +13,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "R6 Sensitivity Tracker", // I updated this from "Create Next App" for you!
-  description: "The definitive database for Rainbow Six Siege pro configurations.",
+  // 1. The Browser Tab Title
+  title: {
+    default: 'R6 Sens Tracker | Pro Siege Settings',
+    template: '%s | R6 Sens Tracker', // This makes sub-pages look like "About | R6 Sens Tracker"
+  },
+  
+  // 2. The Google Search Description
+  description: 'The definitive, centralized hub for Rainbow Six Siege professional configurations, sensitivities, and multipliers.',
+  
+  // 3. The Discord/Twitter Link Preview (Open Graph)
+  openGraph: {
+    title: 'R6 Sens Tracker | Pro Siege Settings',
+    description: 'The definitive database for Rainbow Six Siege professional configurations.',
+    url: 'https://www.r6sens.com',
+    siteName: 'R6 Sens Tracker',
+    locale: 'en_US',
+    type: 'website',
+  },
+  
+  // 4. Twitter Specific Card Styling
+  twitter: {
+    card: 'summary_large_image',
+    title: 'R6 Sens Tracker',
+    description: 'The definitive database for Rainbow Six Siege professional configurations.',
+  },
 };
 
 export default function RootLayout({
