@@ -73,7 +73,6 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         </div>
 
         {/* --- HEADER SECTION --- */}
-        {/* Cleaned up header structure: just the clean title and the cyan/blue sub-label */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-2">
             {player.name}'s Configuration
@@ -87,8 +86,8 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         <div>
           <div className="w-full h-[2px] bg-[#5ce1e6] mb-8 shadow-[0_0_10px_rgba(92,225,230,0.5)]"></div>
 
-          {/* All row paddings at py-4 for a sleeker profile layout */}
-          <div className="flex flex-col border border-gray-800/40 rounded-lg overflow-hidden">
+          {/* Removed the border and rounded corners here to go back to the flush striped look */}
+          <div className="flex flex-col">
             
             {/* Row 1: Sensitivity */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
@@ -142,9 +141,9 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         </div>
 
         {/* --- LAST UPDATED TIMESTAMP --- */}
-        <div className="mt-16 pt-8 border-t border-gray-900 flex justify-center">
-          <p className="text-gray-500 text-sm font-mono tracking-widest uppercase flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-[#5ce1e6] shadow-[0_0_8px_rgba(92,225,230,0.8)] animate-pulse"></span>
+        <div className="mt-4 flex justify-end">
+          <p className="text-gray-500 text-xs font-mono tracking-widest uppercase flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#5ce1e6] shadow-[0_0_8px_rgba(92,225,230,0.8)] animate-pulse"></span>
             Last Updated: {formattedDate}
           </p>
         </div>
