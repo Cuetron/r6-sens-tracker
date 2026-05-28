@@ -28,10 +28,10 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   // Return the custom Discord card info!
   return {
     title: `${player.name}'s Settings`,
-    description: `View ${player.name}'s updated Rainbow Six Siege sensitivity, DPI, and aspect ratio on the R6 Sens Tracker.`,
+    description: `View ${player.name}'s updated Rainbow Six Siege sensitivity, DPI, aspect ratio, and hardware on the R6 Sens Tracker.`,
     openGraph: {
       title: `${player.name} (${player.team}) | R6 Settings`,
-      description: `View ${player.name}'s updated Rainbow Six Siege sensitivity, DPI, and aspect ratio.`,
+      description: `View ${player.name}'s updated Rainbow Six Siege sensitivity, DPI, aspect ratio, and hardware.`,
     }
   };
 }
@@ -86,7 +86,6 @@ export default async function PlayerProfile({ params }: { params: { id: string }
         <div>
           <div className="w-full h-[2px] bg-[#5ce1e6] mb-8 shadow-[0_0_10px_rgba(92,225,230,0.5)]"></div>
 
-          {/* Removed the border and rounded corners here to go back to the flush striped look */}
           <div className="flex flex-col">
             
             {/* Row 1: Sensitivity */}
@@ -131,10 +130,40 @@ export default async function PlayerProfile({ params }: { params: { id: string }
               <span className="text-lg tracking-wide">{player.FOV}</span>
             </div>
 
-            {/* Row 8: Mouse Hardware */}
+            {/* Row 8: Monitor */}
             <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse</span>
-              <span className="text-lg tracking-wide">{player.mouse || player.Mouse || "N/A"}</span>
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Monitor</span>
+              <span className="text-lg tracking-wide text-right">{player.monitor || player.Monitor || "N/A"}</span>
+            </div>
+
+            {/* Row 9: Mouse & Mousepad */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse & Pad</span>
+              <span className="text-lg tracking-wide text-right">
+                {player.mouse || player.Mouse || "N/A"} 
+                <span className="text-gray-600 text-sm mx-2">|</span> 
+                {player.mousepad || player.Mousepad || "N/A"}
+              </span>
+            </div>
+
+            {/* Row 10: Keyboard & Switches */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Keyboard & Switches</span>
+              <span className="text-lg tracking-wide text-right">
+                {player.keyboard || player.Keyboard || "N/A"} 
+                <span className="text-gray-600 text-sm mx-2">|</span> 
+                {player.switches || player.Switches || "N/A"}
+              </span>
+            </div>
+
+            {/* Row 11: Audio (Headset & In-Ears) */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Audio (Headset / In-Ears)</span>
+              <span className="text-lg tracking-wide text-right">
+                {player.headset || player.Headset || "N/A"} 
+                <span className="text-gray-600 text-sm mx-2">|</span> 
+                {player.inears || player.InEars || player.Inears || "N/A"}
+              </span>
             </div>
             
           </div>
