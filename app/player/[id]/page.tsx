@@ -89,79 +89,76 @@ export default async function PlayerProfile({ params }: { params: { id: string }
           <div className="flex flex-col">
             
             {/* Row 1: Sensitivity */}
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+            {/* Reduced padding to py-3 for a tighter fit */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Sensitivity</span>
               <span className="text-lg tracking-wide">{player.Sensitivity}, {player.Sensitivity}</span>
             </div>
 
             {/* Row 2: ADS 1x */}
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">ADS 1X</span>
               <span className="text-lg tracking-wide">{player["ADS (1x)"] || "N/A"}</span>
             </div>
 
             {/* Row 3: ADS 2.5x */}
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">ADS 2.5X</span>
               <span className="text-lg tracking-wide">{player["ADS (2.5)"] || "N/A"}</span>
             </div>
 
-            {/* Row 4: DPI */}
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">DPI</span>
-              <span className="text-lg tracking-wide">{player.DPI}</span>
+            {/* Row 4: DPI & Mouse Multiplier (COMBINED) */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">DPI & Multiplier</span>
+              <span className="text-lg tracking-wide text-right">
+                {player.DPI} 
+                <span className="text-[#5ce1e6] font-black mx-3">|</span> 
+                {player["Mouse Multiplier"]}
+              </span>
             </div>
 
-            {/* Row 5: Mouse Multiplier */}
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse Multiplier</span>
-              <span className="text-lg tracking-wide">{player["Mouse Multiplier"]}</span>
+            {/* Row 5: Aspect Ratio & FOV (COMBINED) */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
+              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Aspect Ratio & FOV</span>
+              <span className="text-lg tracking-wide text-right">
+                {player["Aspect Ratio"]} 
+                <span className="text-[#5ce1e6] font-black mx-3">|</span> 
+                {player.FOV}
+              </span>
             </div>
 
-            {/* Row 6: Aspect Ratio */}
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Aspect Ratio</span>
-              <span className="text-lg tracking-wide">{player["Aspect Ratio"]}</span>
-            </div>
-
-            {/* Row 7: FOV */}
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
-              <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">FOV</span>
-              <span className="text-lg tracking-wide">{player.FOV}</span>
-            </div>
-
-            {/* Row 8: Monitor */}
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+            {/* Row 6: Monitor */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Monitor</span>
               <span className="text-lg tracking-wide text-right">{player.monitor || player.Monitor || "N/A"}</span>
             </div>
 
-            {/* Row 9: Mouse & Mousepad */}
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+            {/* Row 7: Mouse & Mousepad */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse & Pad</span>
               <span className="text-lg tracking-wide text-right">
                 {player.mouse || player.Mouse || "N/A"} 
-                <span className="text-gray-600 text-sm mx-2">|</span> 
+                <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.mousepad || player.Mousepad || "N/A"}
               </span>
             </div>
 
-            {/* Row 10: Keyboard & Switches */}
-            <div className="flex justify-between items-center bg-[#09090b] px-8 py-4 border-b border-gray-800">
+            {/* Row 8: Keyboard & Switches */}
+            <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Keyboard & Switches</span>
               <span className="text-lg tracking-wide text-right">
                 {player.keyboard || player.Keyboard || "N/A"} 
-                <span className="text-gray-600 text-sm mx-2">|</span> 
+                <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.switches || player.Switches || "N/A"}
               </span>
             </div>
 
-            {/* Row 11: Audio (Headset & In-Ears) */}
-            <div className="flex justify-between items-center bg-[#18181b] px-8 py-4 border-b border-gray-800">
+            {/* Row 9: Audio (Headset & In-Ears) */}
+            <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Audio (Headset / In-Ears)</span>
               <span className="text-lg tracking-wide text-right">
                 {player.headset || player.Headset || "N/A"} 
-                <span className="text-gray-600 text-sm mx-2">|</span> 
+                <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.inears || player.InEars || player.Inears || "N/A"}
               </span>
             </div>
