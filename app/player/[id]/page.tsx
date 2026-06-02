@@ -61,13 +61,15 @@ export default async function PlayerProfile({ params }: { params: { id: string }
     : "Date Unknown";
 
   // --- SENSITIVITY PARSER ---
-  // Converts your database decimal workaround (e.g. 6.7) into split Horizontal/Vertical values
+  // Converts your database decimal workaround (e.g. 6.7) into explicit H and V values
   const sensRaw = String(player.Sensitivity || "0");
-  let displaySens = `${sensRaw}, ${sensRaw}`; // Default fallback for normal whole numbers
+  let horizSens = sensRaw;
+  let vertSens = sensRaw;
 
   if (sensRaw.includes('.')) {
-    const [horiz, vert] = sensRaw.split('.');
-    displaySens = `${horiz}, ${vert}`;
+    const parts = sensRaw.split('.');
+    horizSens = parts[0];
+    vertSens = parts[1];
   }
 
   return (
@@ -98,10 +100,14 @@ export default async function PlayerProfile({ params }: { params: { id: string }
 
           <div className="flex flex-col">
             
-            {/* Row 1: Sensitivity (Now using the parsed displaySens variable) */}
+            {/* Row 1: Sensitivity (Updated with explicit H and V tags) */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Sensitivity</span>
-              <span className="text-lg tracking-wide">{displaySens}</span>
+              <span className="text-lg tracking-wide flex items-center justify-end">
+                <span className="text-gray-500 text-sm font-bold mr-2">H:</span> {horizSens}
+                <span className="text-[#5ce1e6] font-black mx-3">|</span> 
+                <span className="text-gray-500 text-sm font-bold mr-2">V:</span> {vertSens}
+              </span>
             </div>
 
             {/* Row 2: ADS 1x */}
@@ -116,20 +122,20 @@ export default async function PlayerProfile({ params }: { params: { id: string }
               <span className="text-lg tracking-wide">{player["ADS (2.5)"] || "N/A"}</span>
             </div>
 
-            {/* Row 4: DPI & Mouse Multiplier */}
+            {/* Row 4: DPI & Mouse Multiplier (COMBINED) */}
             <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">DPI & Multiplier</span>
-              <span className="text-lg tracking-wide text-right">
+              <span className="text-lg tracking-wide text-right flex items-center justify-end">
                 {player.DPI} 
                 <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player["Mouse Multiplier"]}
               </span>
             </div>
 
-            {/* Row 5: Aspect Ratio & FOV */}
+            {/* Row 5: Aspect Ratio & FOV (COMBINED) */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Aspect Ratio & FOV</span>
-              <span className="text-lg tracking-wide text-right">
+              <span className="text-lg tracking-wide text-right flex items-center justify-end">
                 {player["Aspect Ratio"]} 
                 <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.FOV}
@@ -145,7 +151,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
             {/* Row 7: Mouse & Mousepad */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Mouse & Pad</span>
-              <span className="text-lg tracking-wide text-right">
+              <span className="text-lg tracking-wide text-right flex items-center justify-end">
                 {player.mouse || player.Mouse || "N/A"} 
                 <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.mousepad || player.Mousepad || "N/A"}
@@ -155,7 +161,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
             {/* Row 8: Keyboard & Switches */}
             <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Keyboard & Switches</span>
-              <span className="text-lg tracking-wide text-right">
+              <span className="text-lg tracking-wide text-right flex items-center justify-end">
                 {player.keyboard || player.Keyboard || "N/A"} 
                 <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.switches || player.Switches || "N/A"}
@@ -165,7 +171,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
             {/* Row 9: Audio (Headset & In-Ears) */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Audio (Headset / In-Ears)</span>
-              <span className="text-lg tracking-wide text-right">
+              <span className="text-lg tracking-wide text-right flex items-center justify-end">
                 {player.headset || player.Headset || "N/A"} 
                 <span className="text-[#5ce1e6] font-black mx-3">|</span> 
                 {player.inears || player.InEars || player.Inears || "N/A"}
