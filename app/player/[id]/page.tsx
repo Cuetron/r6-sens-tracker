@@ -60,6 +60,16 @@ export default async function PlayerProfile({ params }: { params: { id: string }
       })
     : "Date Unknown";
 
+  // --- SENSITIVITY PARSER ---
+  // Converts your database decimal workaround (e.g. 6.7) into split Horizontal/Vertical values
+  const sensRaw = String(player.Sensitivity || "0");
+  let displaySens = `${sensRaw}, ${sensRaw}`; // Default fallback for normal whole numbers
+
+  if (sensRaw.includes('.')) {
+    const [horiz, vert] = sensRaw.split('.');
+    displaySens = `${horiz}, ${vert}`;
+  }
+
   return (
     <div className="min-h-screen bg-[#09090b] text-white font-sans selection:bg-[#5ce1e6] selection:text-black pb-32">
       
@@ -88,11 +98,10 @@ export default async function PlayerProfile({ params }: { params: { id: string }
 
           <div className="flex flex-col">
             
-            {/* Row 1: Sensitivity */}
-            {/* Reduced padding to py-3 for a tighter fit */}
+            {/* Row 1: Sensitivity (Now using the parsed displaySens variable) */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Sensitivity</span>
-              <span className="text-lg tracking-wide">{player.Sensitivity}, {player.Sensitivity}</span>
+              <span className="text-lg tracking-wide">{displaySens}</span>
             </div>
 
             {/* Row 2: ADS 1x */}
@@ -107,7 +116,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
               <span className="text-lg tracking-wide">{player["ADS (2.5)"] || "N/A"}</span>
             </div>
 
-            {/* Row 4: DPI & Mouse Multiplier (COMBINED) */}
+            {/* Row 4: DPI & Mouse Multiplier */}
             <div className="flex justify-between items-center bg-[#09090b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">DPI & Multiplier</span>
               <span className="text-lg tracking-wide text-right">
@@ -117,7 +126,7 @@ export default async function PlayerProfile({ params }: { params: { id: string }
               </span>
             </div>
 
-            {/* Row 5: Aspect Ratio & FOV (COMBINED) */}
+            {/* Row 5: Aspect Ratio & FOV */}
             <div className="flex justify-between items-center bg-[#18181b] px-8 py-3 border-b border-gray-800">
               <span className="text-[#5ce1e6] text-base font-semibold tracking-wider uppercase">Aspect Ratio & FOV</span>
               <span className="text-lg tracking-wide text-right">

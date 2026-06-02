@@ -47,6 +47,9 @@ export default function AboutContact() {
                     <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
                       @Eaglemees
                     </a>
+                    <a href="https://x.com/mingoran_" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
+                      @Mingoran
+                    </a>
                   </div>
                 </li>
               </ul>
