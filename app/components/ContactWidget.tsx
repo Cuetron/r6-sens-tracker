@@ -71,11 +71,12 @@ const handleSubmit = async (e: React.FormEvent) => {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 font-sans flex flex-col items-end">
+    // FIX APPLIED HERE: Added 'pointer-events-none' so the wrapper doesn't block the screen
+    <div className="fixed bottom-8 right-8 z-50 font-sans flex flex-col items-end pointer-events-none">
       
       {/* --- THE POPUP FORM --- */}
       <div 
-        className={`mb-4 w-96 bg-[#09090b]/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl shadow-black/50 transform origin-bottom-right transition-all duration-300 ease-out overflow-hidden ${
+        className={`mb-4 w-[90vw] sm:w-96 bg-[#09090b]/95 backdrop-blur-md border border-white/10 rounded-lg shadow-2xl shadow-black/50 transform origin-bottom-right transition-all duration-300 ease-out overflow-hidden ${
           isOpen ? 'scale-100 opacity-100 translate-y-0 pointer-events-auto' : 'scale-95 opacity-0 translate-y-4 pointer-events-none'
         }`}
       >
@@ -89,7 +90,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
           <button 
             onClick={() => setIsOpen(false)}
-            className="text-gray-400 hover:text-white hover:bg-white/10 rounded-md p-1 transition-all text-lg font-bold leading-none flex items-center justify-center w-6 h-6"
+            className="text-gray-400 hover:text-white hover:bg-white/10 rounded-md p-1 transition-all text-lg font-bold leading-none flex items-center justify-center w-6 h-6 pointer-events-auto"
           >
             ×
           </button>
@@ -176,9 +177,10 @@ const handleSubmit = async (e: React.FormEvent) => {
       </div>
 
       {/* --- THE FLOATING BUTTON --- */}
+      {/* FIX APPLIED HERE: Added 'pointer-events-auto' so the button is actually clickable */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-[#5ce1e6] hover:bg-white text-black rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(92,225,230,0.4)] hover:shadow-[0_0_25px_rgba(255,255,255,0.6)] transition-all duration-300 transform hover:scale-105 active:scale-95"
+        className="w-14 h-14 bg-[#5ce1e6] hover:bg-white text-black rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(92,225,230,0.4)] hover:shadow-[0_0_25px_rgba(255,255,255,0.6)] transition-all duration-300 transform hover:scale-105 active:scale-95 pointer-events-auto"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-7 h-7 transition-transform duration-300 ${isOpen ? 'rotate-90 scale-0 opacity-0 absolute' : 'rotate-0 scale-100 opacity-100'}`}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
