@@ -9,7 +9,8 @@ export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false); // Controls the mobile menu
 
   return (
-    <nav className="sticky top-0 z-50 flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-4 md:py-6 bg-[#09090b]/80 backdrop-blur-md border-b border-gray-800 mb-8 w-full">
+    // ADDED: 'relative' to trap the absolute links, and 'h-fit' to kill the invisible shield
+    <nav className="relative h-fit sticky top-0 z-50 flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-4 md:py-6 bg-[#09090b]/80 backdrop-blur-md border-b border-gray-800 mb-8 w-full">
       
       {/* Top Bar (Always visible) */}
       <div className="flex items-center justify-between w-full md:w-auto">
