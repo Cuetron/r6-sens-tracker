@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,10 +19,10 @@ export const metadata: Metadata = {
     default: 'R6 Sens Tracker | Pro Siege Settings',
     template: '%s | R6 Sens Tracker', // This makes sub-pages look like "About | R6 Sens Tracker"
   },
-  
+
   // 2. The Google Search Description
   description: 'The definitive, centralized hub for Rainbow Six Siege professional configurations, sensitivities, and multipliers.',
-  
+
   // 3. The Discord/Twitter Link Preview (Open Graph)
   openGraph: {
     title: 'R6 Sens Tracker | Pro Siege Settings',
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     type: 'website',
   },
-  
+
   // 4. Twitter Specific Card Styling
   twitter: {
     card: 'summary_large_image',
@@ -51,7 +52,10 @@ export default function RootLayout({
       // Right at the end of this string is the overflow-y-scroll fix
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased overflow-y-scroll`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
