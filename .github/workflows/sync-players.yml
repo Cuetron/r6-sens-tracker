@@ -35,6 +35,14 @@ jobs:
         run: |
           set -euo pipefail
 
+          # 0. Mirror custom enum types (like "Sources") from prod into the copy.
+          #    Runs every time so new enum values you add in prod carry over.
+          #    "already exists" messages here are expected and harmless.
+          psql "$SRC" -Atq -c "select distinct format('create type public.%I as enum ();', t.typname) from pg_type t join pg_enum e on e.enumtypid = t.oid where t.typnamespace = 'public'::regnamespace" > enum_types.sql
+          psql "$SRC" -Atq -c "select format('alter type public.%I add value if not exists %L;', t.typname, e.enumlabel) from pg_type t join pg_enum e on e.enumtypid = t.oid where t.typnamespace = 'public'::regnamespace order by t.typname, e.enumsortorder" > enum_values.sql
+          psql "$DST" -q -f enum_types.sql || true
+          psql "$DST" -q -v ON_ERROR_STOP=1 -f enum_values.sql
+
           # 1. First run only: create the Players table in the copy
           EXISTS=$(psql "$DST" -Atc "select to_regclass('public.\"Players\"') is not null")
           if [ "$EXISTS" = "f" ]; then
