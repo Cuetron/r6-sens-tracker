@@ -1,0 +1,66 @@
+name: Sync Players to analyst copy
+
+# Makes the "Players" table in the analyst database an exact mirror of prod.
+# Every run replaces the copy's Players rows with prod's current rows, so any
+# edits made to Players in the copy are overwritten. Prod is only ever READ
+# (via the analyst_ro role).
+
+on:
+  schedule:
+    - cron: '17 * * * *'   # every hour at :17 (UTC)
+  workflow_dispatch:        # lets you run it manually from the Actions tab
+
+concurrency:
+  group: sync-players
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install Postgres 17 client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Sync Players
+        env:
+          SRC: ${{ secrets.PROD_RO_URL }}
+          DST: ${{ secrets.COPY_DB_URL }}
+        run: |
+          set -euo pipefail
+
+          # 1. First run only: create the Players table in the copy
+          EXISTS=$(psql "$DST" -Atc "select to_regclass('public.\"Players\"') is not null")
+          if [ "$EXISTS" = "f" ]; then
+            echo "Creating Players table in the copy..."
+            pg_dump "$SRC" --schema-only --no-owner --no-privileges -t 'public."Players"' \
+              | psql "$DST" -v ON_ERROR_STOP=1
+          fi
+
+          # 2. Safety check: never wipe the copy if prod returns nothing
+          COUNT=$(psql "$SRC" -Atc 'select count(*) from public."Players"')
+          echo "Prod Players rows: $COUNT"
+          if [ "$COUNT" -eq 0 ]; then
+            echo "Source returned 0 rows (is an RLS policy missing for analyst_ro?). Aborting."
+            exit 1
+          fi
+
+          # 3. Export from prod (read-only)
+          psql "$SRC" -v ON_ERROR_STOP=1 \
+            -c '\copy (select * from public."Players") to players.csv csv header'
+
+          # 4. Replace the copy's rows with prod's, all-or-nothing in one transaction
+          psql "$DST" -v ON_ERROR_STOP=1 --single-transaction <<'SQL'
+          delete from public."Players";
+          \copy public."Players" from 'players.csv' csv header
+          select setval(
+            pg_get_serial_sequence('public."Players"', 'id'),
+            (select coalesce(max(id), 1) from public."Players")
+          );
+          SQL
+
+          echo "Sync complete."
