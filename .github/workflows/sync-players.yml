@@ -50,7 +50,9 @@ jobs:
             # Prod's updated_at trigger uses the moddatetime extension
             psql "$DST" -q -v ON_ERROR_STOP=1 -c 'create extension if not exists moddatetime with schema extensions'
             # --single-transaction: if anything fails, no half-built table is left behind
+            # grep -v: skip the prod-only analyst_ro policy (that role doesn't exist in the copy)
             pg_dump "$SRC" --schema-only --no-owner --no-privileges -t 'public."Players"' \
+              | grep -v 'analyst_ro' \
               | psql "$DST" -v ON_ERROR_STOP=1 --single-transaction
           fi
 
