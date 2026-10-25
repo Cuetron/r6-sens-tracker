@@ -1,14 +1,30 @@
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import NavBar from '@/app/components/NavBar';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Refresh at most every 5 minutes instead of running a function on every visit
+// (see lib/supabase-server.ts).
+export const revalidate = 300;
 
-export default async function TeamRoster({ params }: { params: { region: string, team: string } }) {
+// Build every current region/team roster page ahead of time. New teams still work:
+// they're built the first time someone opens them, then cached.
+export async function generateStaticParams() {
+  const { data } = await supabase.from('Players').select('region, team');
+  const seen = new Set<string>();
+  const params: { region: string; team: string }[] = [];
+  for (const p of data ?? []) {
+    if (!p.region || !p.team) continue;
+    const region = String(p.region).toUpperCase();
+    const key = `${region}|${p.team}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    params.push({ region, team: p.team });
+  }
+  return params;
+}
+
+export default async function TeamRoster({ params }: { params: Promise<{ region: string, team: string }> }) {
   const { region, team } = await params;
   
   const decodedRegion = decodeURIComponent(region).toUpperCase();
@@ -46,6 +62,7 @@ export default async function TeamRoster({ params }: { params: { region: string,
             <Link 
               key={player.id}
               href={`/player/${player.id}`}
+              prefetch={false}
               className="flex items-center py-8 border-b border-gray-800 hover:bg-white/5 transition-colors px-4 -mx-4 group"
             >
               <span className="text-[#39ff14] font-mono text-lg tracking-widest mr-12">
