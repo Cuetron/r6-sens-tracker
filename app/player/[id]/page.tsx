@@ -1,24 +1,43 @@
-import { createClient } from '@supabase/supabase-js';
-import Link from 'next/link';
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import BackButton from '@/app/components/BackButton';
 import NavBar from '@/app/components/NavBar';
+import { supabaseServer } from '@/lib/supabase-server';
 import type { Metadata } from 'next';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Each player page is built once and then refreshed at most every 5 minutes
+// (see lib/supabase-server.ts), instead of running a function on every visit.
+export const revalidate = 300;
 
-// This Next.js function runs BEFORE the page loads to generate the Discord/Google tags
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const { id } = await params;
+// Build every current player's page ahead of time. Players added later still work:
+// their page is built the first time someone opens it, then cached like the others.
+export async function generateStaticParams() {
+  const { data } = await supabaseServer.from('Players').select('id');
+  return (data ?? []).map((p) => ({ id: String(p.id) }));
+}
 
-  // Quickly ask Supabase for just the player's name and team
-  const { data: player } = await supabase
+// One lookup shared by generateMetadata and the page itself (React `cache` makes the
+// second call in the same render reuse the first one's result).
+const getPlayer = cache(async (id: string) => {
+  const { data, error } = await supabaseServer
     .from('Players')
-    .select('name, team')
+    .select('*')
     .eq('id', id)
     .single();
+
+  // "No such player" / "id isn't a valid number" just mean 404. Any other error is
+  // treated as a real failure so a temporary outage isn't cached as a 404 page.
+  if (error && error.code !== 'PGRST116' && error.code !== '22P02') {
+    throw new Error(`Error fetching player ${id}: ${error.message}`);
+  }
+  return data;
+});
+
+// This Next.js function runs BEFORE the page loads to generate the Discord/Google tags
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+
+  const player = await getPlayer(id);
 
   // If the player isn't found, fallback to default
   if (!player) {
@@ -36,17 +55,13 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function PlayerProfile({ params }: { params: { id: string } }) {
+export default async function PlayerProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // Fetch the single player matching the ID
-  const { data: player, error } = await supabase
-    .from('Players')
-    .select('*')
-    .eq('id', id)
-    .single();
+  // Fetch the single player matching the ID (same lookup generateMetadata used)
+  const player = await getPlayer(id);
 
-  if (error || !player) {
+  if (!player) {
     notFound();
   }
 

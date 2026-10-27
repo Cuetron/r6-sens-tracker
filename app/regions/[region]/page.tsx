@@ -1,12 +1,21 @@
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import NavBar from '@/app/components/NavBar';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+// Refresh at most every 5 minutes instead of running a function on every visit
+// (see lib/supabase-server.ts).
+export const revalidate = 300;
+
+// Build the known region pages ahead of time. The page itself upper-cases the region
+// from the URL, so we do the same here. Anything else is still built on first visit.
+export async function generateStaticParams() {
+  const known = ['NA', 'EU', 'SA', 'APAC', 'CHINA', 'OCE', 'ASIA', 'APAC NORTH'];
+  const { data } = await supabase.from('Players').select('region');
+  const fromDb = (data ?? []).map((p) => p.region).filter(Boolean) as string[];
+  const regions = Array.from(new Set([...known, ...fromDb.map((r) => r.toUpperCase())]));
+  return regions.map((region) => ({ region }));
+}
 
 // Dictionary to map the URL region to the correct logo file
 const regionLogos: Record<string, string> = {
@@ -21,7 +30,7 @@ const regionLogos: Record<string, string> = {
   'APAC NORTH': '/apacLogo.png'
 };
 
-export default async function RegionTeams({ params }: { params: { region: string } }) {
+export default async function RegionTeams({ params }: { params: Promise<{ region: string }> }) {
   const { region } = await params;
   const decodedRegion = decodeURIComponent(region).toUpperCase();
 
@@ -147,6 +156,7 @@ export default async function RegionTeams({ params }: { params: { region: string
             <Link 
               key={team}
               href={`/regions/${decodedRegion}/${encodeURIComponent(team)}`}
+              prefetch={false}
               className="flex items-center py-8 border-b border-gray-800 hover:bg-white/5 transition-colors px-4 -mx-4 group"
             >
               <span className="text-[#39ff14] font-mono text-lg tracking-widest mr-12">

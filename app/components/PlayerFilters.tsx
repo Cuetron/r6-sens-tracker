@@ -1,40 +1,33 @@
 "use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-
-export default function PlayerFilters({ 
-  teams, 
-  regions 
-}: { 
-  teams: string[], 
-  regions: string[] 
+// Controlled filter inputs. The parent (Directory) owns the state and does the
+// filtering in the browser, so typing never causes a request to the server.
+export default function PlayerFilters({
+  teams,
+  regions,
+  q,
+  team,
+  region,
+  onChange,
+}: {
+  teams: string[];
+  regions: string[];
+  q: string;
+  team: string;
+  region: string;
+  onChange: (key: 'q' | 'team' | 'region', value: string) => void;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleFilterChange = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams);
-    
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    
-    router.replace(`/?${params.toString()}`, { scroll: false });
-  };
-
   return (
     // Changed flex-direction for mobile stacking, horizontal for desktop
     <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full px-4 md:px-0">
-      
+
       {/* 1. Name Search */}
       <div className="relative w-full md:w-auto">
         <input
           type="text"
           placeholder="Search players..."
-          defaultValue={searchParams.get('q')?.toString()}
-          onChange={(e) => handleFilterChange('q', e.target.value)}
+          value={q}
+          onChange={(e) => onChange('q', e.target.value)}
           // w-full on mobile, w-64 on desktop
           className="bg-[#18181b] text-white px-6 py-4 pr-12 border border-gray-700 focus:outline-none focus:border-[#5ce1e6] transition-colors w-full md:w-64 uppercase text-base tracking-wider placeholder:text-gray-600"
         />
@@ -43,25 +36,25 @@ export default function PlayerFilters({
 
       {/* 2. Region Dropdown */}
       <select
-        defaultValue={searchParams.get('region')?.toString() || ""}
-        onChange={(e) => handleFilterChange('region', e.target.value)}
+        value={region}
+        onChange={(e) => onChange('region', e.target.value)}
         className="bg-[#18181b] text-white px-6 py-4 border border-gray-700 focus:outline-none focus:border-[#5ce1e6] transition-colors w-full md:w-64 uppercase text-base tracking-wider cursor-pointer appearance-none"
       >
         <option value="">All Regions</option>
-        {regions.map((region) => (
-          <option key={region} value={region}>{region}</option>
+        {regions.map((r) => (
+          <option key={r} value={r}>{r}</option>
         ))}
       </select>
 
       {/* 3. Team Dropdown */}
       <select
-        defaultValue={searchParams.get('team')?.toString() || ""}
-        onChange={(e) => handleFilterChange('team', e.target.value)}
+        value={team}
+        onChange={(e) => onChange('team', e.target.value)}
         className="bg-[#18181b] text-white px-6 py-4 border border-gray-700 focus:outline-none focus:border-[#5ce1e6] transition-colors w-full md:w-64 uppercase text-base tracking-wider cursor-pointer appearance-none"
       >
         <option value="">All Teams</option>
-        {teams.map((team) => (
-          <option key={team} value={team}>{team}</option>
+        {teams.map((t) => (
+          <option key={t} value={t}>{t}</option>
         ))}
       </select>
 
