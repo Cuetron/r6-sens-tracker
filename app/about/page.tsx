@@ -1,120 +1,146 @@
-import Link from 'next/link';
-import NavBar from '@/app/components/NavBar';
+import type { Metadata } from 'next';
+import Icon from '@/app/components/Icons';
+import { X_HANDLES } from '@/app/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'About: built by the community',
+  description:
+    'R6Sens is a non-profit database of Rainbow Six Siege pro settings and gear, collected from the players. Where the numbers come from, who to talk to, and fair use.',
+};
+
+function Section({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section aria-labelledby={id} className="border-t border-line py-10 md:py-14">
+      <div className="md:grid md:grid-cols-[minmax(0,480px)_minmax(0,1fr)] md:gap-8">
+        <h2 id={id} className="display max-w-[480px] text-[40px] md:text-[56px]">
+          {title}
+        </h2>
+        <div className="mt-5 max-w-[680px] md:mt-0">{children}</div>
+      </div>
+    </section>
+  );
+}
 
 export default function AboutContact() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white font-sans selection:bg-[#5ce1e6] selection:text-black pb-32">
-      
-      <NavBar />
+    <main id="main">
+      {/* Header */}
+      <header className="page pt-12 md:pt-20 desk:pt-28">
+        <div className="desk:grid desk:grid-cols-[1fr_320px] desk:items-end desk:gap-12">
+          <h1 className="display text-[60px] md:text-[104px] desk:text-[136px]">
+            Built by the
+            <br />
+            <span className="text-accent">Community.</span>
+          </h1>
+          <p className="mt-6 text-base leading-normal text-muted md:text-lg md:leading-[1.5] desk:mt-0 desk:pb-3">
+            Non-profit, never monetised. Just the settings, kept current.
+          </p>
+        </div>
+      </header>
 
-      <main className="max-w-6xl mx-auto px-12">
-        
-        {/* Header */}
-        <h1 className="text-[5rem] font-black uppercase tracking-tighter mb-6 leading-none">
-          Intel &<br/>Comms
-        </h1>
-        
-        {/* Cyan Separator Line */}
-        <div className="w-full h-[2px] bg-[#5ce1e6] mb-16 shadow-[0_0_10px_rgba(92,225,230,0.5)]"></div>
+      <div className="page mt-12 md:mt-20">
+        <Section id="why-heading" title="Why it exists">
+          <p className="text-[17px] leading-relaxed md:text-lg">
+            Settings change with the meta. Tracking DPI, multipliers and aspect ratios across
+            almost two hundred pros by hand is slow and easy to get wrong.
+          </p>
+          <p className="mt-4 text-[17px] leading-relaxed md:text-lg">
+            R6Sens keeps one place for all of it, so you can copy a pro setup or compare a whole
+            roster in seconds.
+          </p>
+        </Section>
 
-        {/* --- 2-COLUMN GRID SECTION --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-          
-          {/* LEFT SIDE: About Information */}
-          <div>
-            <h2 className="text-3xl font-bold uppercase tracking-widest mb-6">About the Tracker</h2>
-            <div className="text-gray-400 space-y-6 text-lg tracking-wide font-light">
-              <p>
-                The R6 Sensitivity Tracker was built to be the definitive, centralized hub for Rainbow Six Siege professional configurations. 
-              </p>
-              <p>
-                As the meta evolves, so do the settings. Tracking DPI, multipliers, and aspect ratios across hundreds of pros and streamers is tedious. This database eliminates the guesswork, providing real-time, accurate configurations directly from the competitive scene.
-              </p>
-            </div>
-
-            <div className="mt-12">
-              <h3 className="text-[#5ce1e6] text-xl font-bold uppercase tracking-widest mb-4">Direct Lines</h3>
-              <ul className="space-y-4 text-gray-300 tracking-wider">
-                <li className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-                  <span className="font-bold text-white">TWITTER/X:</span> 
-                  <div className="flex flex-wrap gap-6 font-mono text-sm">
-                    <a href="https://twitter.com/benett_plesha" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                      @Benett
-                    </a>
-                    <a href="https://twitter.com/itsQuetron" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                      @itsQuetron
-                    </a>
-                    <a href="https://twitter.com/Eaglemees" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                      @Eaglemees
-                    </a>
-                    <a href="https://x.com/mingoran_" target="_blank" rel="noopener noreferrer" className="hover:text-[#5ce1e6] transition-colors">
-                      @Mingoran
-                    </a>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* RIGHT SIDE: Fair Use, Copyright & Data Policy */}
-          <div>
-            <h2 className="text-3xl font-bold uppercase tracking-widest mb-6">Legal & Fair Use</h2>
-            <div className="bg-[#18181b] p-8 border border-gray-800 text-gray-400 space-y-6 text-base tracking-wide font-light">
-              
-              {/* Copyright Info */}
-              <p>
-                This database utilizes team logos, league branding, and related esports imagery under the doctrine of Fair Use. 
-              </p>
-              <p>
-                All images are used strictly for informational, educational, and identification purposes within the Rainbow Six Siege esports ecosystem. These images are web-resolution copies that do not impede the original copyright holders' ability to use or profit from their intellectual property. No free alternative exists that would serve the same documentary purpose.
-              </p>
-              <p>
-                All copyrights and trademarks belong to their respective owners, including <span className="text-white font-medium">Ubisoft</span>, tournament organizers, and individual esports organizations. 
-              </p>
-
-              {/* NEW SECTION: Data Usage & Non-Profit Status */}
-              <div className="border-t border-gray-800 pt-6 mt-6">
-                <h3 className="text-white text-lg font-bold uppercase tracking-widest mb-3">Non-Profit & Data Usage</h3>
-                <p>
-                  The R6 Sensitivity Tracker is a strictly non-profit initiative built by the community, for the community, with no intention of monetization. However, the unauthorized scraping, mass-copying, or redistribution of our curated settings data to populate other websites, trackers, or commercial services is strictly prohibited.
+        <Section id="numbers-heading" title="Where the numbers come from">
+          <ul className="flex flex-col gap-6">
+            <li className="flex gap-3">
+              <Icon name="badge-check" size={20} className="mt-0.5 shrink-0 text-signal" />
+              <div>
+                <p className="font-semibold">Sent by the player</p>
+                <p className="mt-1 text-[14px] leading-normal text-muted">
+                  The pro sent or confirmed these settings to us directly. This is the mark to look
+                  for.
                 </p>
               </div>
-
-              {/* Credits */}
-              <p className="text-sm border-t border-gray-800 pt-6 mt-6">
-                Much of our foundational organizational data and base imagery is sourced with appreciation from the contributors at <a href="https://liquipedia.net/rainbowsix/" target="_blank" rel="noopener noreferrer" className="text-[#5ce1e6] hover:underline font-bold">Liquipedia</a>.
-              </p>
-            </div>
-          </div>
-        </div>
-        {/* --- END 2-COLUMN GRID SECTION --- */}
-
-        {/* --- SPECIAL THANKS SECTION (FULL WIDTH) --- */}
-        <div className="mt-32 border-t border-gray-800 pt-16 max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-black uppercase tracking-widest text-white mb-10">
-            Special Thanks
-          </h2>
-
-          {/* New Pro Player Shoutout Box */}
-          <div className="bg-[#18181b] p-8 rounded-lg border border-gray-800 mb-12 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
-            <h3 className="text-[#5ce1e6] text-xl font-bold uppercase tracking-widest mb-4">The Competitors</h3>
-            <p className="text-gray-400 text-lg tracking-wide font-light leading-relaxed">
-              A massive thank you to the Rainbow Six Siege professional players and creators who have personally reached out to share and update their configurations. Your willingness to be transparent directly fuels this database and helps bridge the gap between the highest tier of competitive play and the community.
-            </p>
-          </div>
-          
-          <p className="text-gray-500 mb-8 text-sm uppercase tracking-widest">
-            And to everyone who helped make this tracker possible:
+            </li>
+            <li className="flex gap-3">
+              <Icon name="circle-dashed" size={20} className="mt-0.5 shrink-0 text-muted" />
+              <div>
+                <p className="font-semibold">Collected</p>
+                <p className="mt-1 text-[14px] leading-normal text-muted">
+                  Taken from public sources such as streams and team posts, and checked when a
+                  player confirms.
+                </p>
+              </div>
+            </li>
+          </ul>
+          <p className="mt-6 text-[14px] leading-normal text-muted">
+            Team and organisation data is sourced with thanks from the contributors at{' '}
+            <a
+              href="https://liquipedia.net/rainbowsix/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-accent underline-offset-2 hover:underline"
+            >
+              Liquipedia
+            </a>
+            .
           </p>
+        </Section>
 
-          <div className="flex justify-center text-[#5ce1e6] font-mono text-2xl tracking-widest font-bold">
-            <span className="cursor-default shadow-[0_0_15px_rgba(92,225,230,0.3)] px-6 py-3 rounded-lg border border-[#5ce1e6]/30 bg-[#5ce1e6]/5">
-              The R6 Community
-            </span>
-          </div>
-        </div>
+        <Section id="talk-heading" title="Talk to us">
+          <p className="text-[15px] leading-normal text-muted">
+            Send your settings, report a change or ask a question. DM any of us on X.
+          </p>
+          <ul className="mt-6 border-t border-line">
+            {X_HANDLES.map((x) => (
+              <li key={x.handle} className="border-b border-line">
+                <a
+                  href={x.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-between py-4 transition-colors duration-[120ms] hover:text-accent"
+                >
+                  <span className="font-display text-[36px] font-bold leading-none md:text-[44px]">
+                    {x.handle}
+                  </span>
+                  <Icon name="arrow-up-right" size={20} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Section>
 
-      </main>
-    </div>
+        <Section id="thanks-heading" title="Thanks">
+          <p className="text-[17px] leading-relaxed md:text-lg">
+            To the Rainbow Six Siege pros and creators who reach out to share and update their
+            settings. Your openness closes the gap between the top of the game and everyone else.
+          </p>
+          <p className="mt-4 text-[15px] leading-normal text-muted">
+            And to the R6 community, who made this tracker possible.
+          </p>
+        </Section>
+
+        <Section id="fairuse-heading" title="Fair use and data">
+          <p className="text-[15px] leading-relaxed text-muted">
+            Team logos, league branding and esports imagery are used under fair use, for
+            information and identification only, as web-resolution copies. All copyrights and
+            trademarks belong to their owners, including Ubisoft, tournament organisers and the
+            teams.
+          </p>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">
+            R6Sens is non-profit and will stay that way. Scraping, mass copying or republishing the
+            curated settings data on other sites or services is not allowed.
+          </p>
+        </Section>
+      </div>
+    </main>
   );
 }

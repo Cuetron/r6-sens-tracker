@@ -1,26 +1,192 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   R6Sens design tokens (from the design handoff).
+   Cyan is for things you can click. Neon green (--signal) means one
+   thing only: the player sent these settings to us.
+   No gradients, glows, shadows or rounded corners anywhere.
+   ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ground: #09090b;
+  --panel: #18181b;
+  --line: #27272a;
+  --ink: #ededed;
+  --muted: #9f9fa9;
+  --accent: #5ce1e6;
+  --on-accent: #09090b;
+  --signal: #39ff14;
+  --na: #4c8dff;
+  --eu: #ff7a2f;
+  --sa: #7ed957;
+  --apac: #b57cff;
+}
+
+/* Desktop starts at 1200px (Tailwind's default xl is 1280px). */
+@theme {
+  --breakpoint-desk: 75rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ground: var(--ground);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-signal: var(--signal);
+  --color-na: var(--na);
+  --color-eu: var(--eu);
+  --color-sa: var(--sa);
+  --color-apac: var(--apac);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-barlow), "Arial Narrow", Impact, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background: var(--ground);
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    /* clip (not hidden) so the sticky nav keeps working: no horizontal page scroll */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Visible keyboard focus everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  dialog {
+    color: var(--ink);
+  }
+  dialog::backdrop {
+    background: rgb(0 0 0 / 0.7);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------
+   Shared building blocks
+   ------------------------------------------------------------------ */
+
+/* Component classes live in the components layer so Tailwind utilities
+   (h-10, px-0, w-full, ...) can still override them. */
+@layer components {
+  /* Page container: 48px side padding on desktop, 32px tablet, 20px phone,
+     stretching to a 1440px maximum. */
+  .page {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  @media (min-width: 48rem) {
+    .page {
+      padding-inline: 32px;
+    }
+  }
+  @media (min-width: 75rem) {
+    .page {
+      padding-inline: 48px;
+    }
+  }
+
+  /* Headlines and numbers use Barlow Condensed. */
+  .display {
+    font-family: var(--font-barlow), "Arial Narrow", Impact, sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.88;
+  }
+  .num {
+    font-family: var(--font-barlow), "Arial Narrow", Impact, sans-serif;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  /* Buttons: square, 44px high. */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 44px;
+    padding-inline: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 120ms,
+      border-color 120ms,
+      color 120ms;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+    border: 1px solid var(--accent);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent) 90%, white);
+    border-color: color-mix(in srgb, var(--accent) 90%, white);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .btn-secondary:hover {
+    border-color: var(--muted);
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* A short dash for a missing number (never "N/A"). */
+  .dash {
+    display: inline-block;
+    width: 20px;
+    height: 2px;
+    background: var(--line);
+    vertical-align: middle;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Motion: small, tied to content, and off when the visitor asks.
+   ------------------------------------------------------------------ */
+@keyframes row-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.row-in {
+  animation: row-in 150ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 10ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -1,43 +1,52 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Barlow_Condensed, Geist } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import NavBar from "@/app/components/NavBar";
+import Footer from "@/app/components/Footer";
+import ContactWidget from "@/app/components/ContactWidget";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Headlines, player and team names, and every number.
+const barlow = Barlow_Condensed({
+  variable: "--font-barlow",
   subsets: ["latin"],
+  weight: ["700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  // 1. The Browser Tab Title
+  // Sub-pages set a title like "Box settings: sens, DPI and gear" and this
+  // template adds the site name.
   title: {
-    default: 'R6 Sens Tracker | Pro Siege Settings',
-    template: '%s | R6 Sens Tracker', // This makes sub-pages look like "About | R6 Sens Tracker"
+    default: "R6Sens | Pro Rainbow Six Siege settings, sent by the pros",
+    template: "%s | R6Sens",
   },
+  description:
+    "Sensitivity, DPI, FOV and gear for every Rainbow Six Siege pro. Most entries come straight from the player.",
 
-  // 2. The Google Search Description
-  description: 'The definitive, centralized hub for Rainbow Six Siege professional configurations, sensitivities, and multipliers.',
-
-  // 3. The Discord/Twitter Link Preview (Open Graph)
+  // Discord/Twitter link preview (Open Graph)
   openGraph: {
-    title: 'R6 Sens Tracker | Pro Siege Settings',
-    description: 'The definitive database for Rainbow Six Siege professional configurations.',
-    url: 'https://www.r6sens.com',
-    siteName: 'R6 Sens Tracker',
-    locale: 'en_US',
-    type: 'website',
+    title: "R6Sens | Pro Rainbow Six Siege settings",
+    description:
+      "Sensitivity, DPI, FOV and gear for every Rainbow Six Siege pro, collected from the players.",
+    url: "https://www.r6sens.com",
+    siteName: "R6Sens",
+    locale: "en_US",
+    type: "website",
   },
 
-  // 4. Twitter Specific Card Styling
   twitter: {
-    card: 'summary_large_image',
-    title: 'R6 Sens Tracker',
-    description: 'The definitive database for Rainbow Six Siege professional configurations.',
+    card: "summary_large_image",
+    title: "R6Sens",
+    description:
+      "Sensitivity, DPI, FOV and gear for every Rainbow Six Siege pro, collected from the players.",
   },
 };
 
@@ -49,11 +58,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      // Right at the end of this string is the overflow-y-scroll fix
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased overflow-y-scroll`}
+      // overflow-y-scroll keeps the scrollbar gutter stable between pages
+      className={`${geistSans.variable} ${barlow.variable} h-full antialiased overflow-y-scroll`}
     >
-      <body className="min-h-full flex flex-col">
-        {children}
+      <body className="min-h-full flex flex-col bg-ground text-ink font-sans">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
+        >
+          Skip to content
+        </a>
+        <NavBar />
+        <div className="flex-1">{children}</div>
+        <Footer />
+        <ContactWidget />
         <Analytics />
       </body>
     </html>
