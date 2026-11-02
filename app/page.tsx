@@ -157,12 +157,12 @@ export default async function Home() {
           </div>
           <div className="flex flex-col items-stretch md:items-center md:text-center">
             <a
-              href="https://twitter.com/benett_plesha"
+              href="https://twitter.com/Eaglemees"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
             >
-              DM @Benett on X
+              DM @Eaglemees on X
               <Icon name="arrow-up-right" />
             </a>
             <p className="mt-3 hidden text-[13px] text-muted md:block">or any of the four editors</p>
