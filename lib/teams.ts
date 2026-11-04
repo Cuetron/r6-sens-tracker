@@ -22,6 +22,65 @@ const LOGO_SLUGS: Record<string, string> = {
   heretics: "heretics",
   shifters: "shifters",
   fnatic: "fnatic",
+
+  // NA
+  "100thieves": "100t",
+  cloud9: "c9",
+  darkzero: "dz",
+  darkzeroesports: "dz",
+  fivefears: "fivefears",
+  outlast: "outlast",
+  shopifyrebellion: "sr",
+  spacestationgaming: "ssg",
+  spacestation: "ssg",
+  wildcard: "wildcard",
+  wildcardgaming: "wildcard",
+  "1of30": "1of30",
+
+  // SA
+  blackdragons: "blackdragons",
+  fazeclan: "faze",
+  faze: "faze",
+  fluxow7m: "w7m",
+  w7m: "w7m",
+  furia: "furia",
+  furiaesports: "furia",
+  imperiumofman: "imperium",
+  imperiumofmen: "imperium",
+  intz: "intz",
+  los: "los",
+  loud: "loud",
+  lucky5: "lucky5",
+  teamliquid: "liquid",
+  liquid: "liquid",
+
+  // OCE
+  "6targets": "6targets",
+  barbieboys: "barbieboys",
+  enterpriseesports: "enterprise",
+  enterprise: "enterprise",
+  rivalesports: "rival",
+  shaiikademy: "shaiikademy",
+
+  // China
+  allgamers: "allgamers",
+  edwardgaming: "edg",
+  edg: "edg",
+  onecoin: "onecoin",
+
+  // Asia
+  daystar: "daystar",
+  sharperesports: "sharper",
+  sharper: "sharper",
+
+  // APAC North
+  bnkfearx: "fearx",
+  fearx: "fearx",
+  bemyenemy: "bemyenemy",
+  canyoubemyenemy: "bemyenemy",
+  kinotrope: "kinotrope",
+  kinotropegaming: "kinotrope",
+  rrx: "rrx",
 };
 
 function key(team: string) {
