@@ -10,6 +10,8 @@
 //
 // Liquipedia's API terms ask for a descriptive User-Agent and at most one
 // request every 2 seconds, so a full run takes a couple of minutes.
+// Never call action=parse from here: Liquipedia allows it once every 30 seconds
+// and blocks the IP address (the whole site) when that is exceeded.
 // Set LP_CONTACT to an email or URL to include it in the User-Agent.
 //
 // Uses sharp, which is already installed as part of Next.js.
@@ -28,48 +30,51 @@ const UA = `R6Sens team logo fetcher (https://www.r6sens.com${
 })`;
 const MAX_SIDE = 1000;
 
-// slug = file name in public/teams, titles = likely Liquipedia page titles.
-// file = force a specific Liquipedia file when the automatic pick is wrong.
+// slug = file name in public/teams, titles = Liquipedia page titles.
+// file = the exact Liquipedia logo file. These were checked against each team
+// page on 2026-11-10: the icon version (no wordmark), dark mode first, newest.
+// Teams without `file` are picked automatically from their page.
+// Teams with `page: null` have no Liquipedia team page, so they are skipped.
 const TEAMS = [
   // NA
-  { slug: "100t", name: "100 Thieves", titles: ["100 Thieves"] },
-  { slug: "c9", name: "Cloud9", titles: ["Cloud9"] },
-  { slug: "dz", name: "DarkZero", titles: ["DarkZero Esports", "DarkZero"] },
-  { slug: "fivefears", name: "Five Fears", titles: ["Five Fears"] },
-  { slug: "outlast", name: "Outlast", titles: ["Outlast"] },
-  { slug: "sr", name: "Shopify Rebellion", titles: ["Shopify Rebellion"] },
-  { slug: "ssg", name: "Spacestation Gaming", titles: ["Spacestation Gaming", "Spacestation"] },
-  { slug: "wildcard", name: "Wildcard", titles: ["Wildcard Gaming", "Wildcard"] },
-  { slug: "1of30", name: "1 of 30", titles: ["1 of 30", "1of30", "One of Thirty"] },
+  { slug: "100t", name: "100 Thieves", titles: ["100 Thieves"], file: "100 Thieves darkmode.png" },
+  { slug: "c9", name: "Cloud9", titles: ["Cloud9"], file: "Cloud9 2023 allmode.png" },
+  { slug: "dz", name: "DarkZero", titles: ["DarkZero"], file: "DarkZero Esports allmode.png" },
+  { slug: "fivefears", name: "Five Fears", titles: ["Five Fears"], file: "FiveFears allmode.png" },
+  { slug: "outlast", name: "Outlast", titles: ["Outlast"], file: "Outlast 2024 darkmode.png" },
+  { slug: "sr", name: "Shopify Rebellion", titles: ["Shopify Rebellion"], file: "Shopify Rebellion 2021 darkmode.png" },
+  { slug: "ssg", name: "Spacestation Gaming", titles: ["Spacestation Gaming"], file: "Spacestation Gaming 2023 allmode.png" },
+  { slug: "wildcard", name: "Wildcard", titles: ["Wildcard"], file: "Wildcard 2024 darkmode.png" },
+  { slug: "1of30", name: "1 of 30", titles: [], page: null },
   // SA
-  { slug: "blackdragons", name: "Black Dragons", titles: ["Black Dragons", "Black Dragons e-Sports"] },
-  { slug: "faze", name: "FaZe Clan", titles: ["FaZe Clan"] },
-  { slug: "w7m", name: "FLUXO W7M", titles: ["FLUXO W7M", "Fluxo W7M", "W7M Esports", "W7M"] },
-  { slug: "furia", name: "FURIA", titles: ["FURIA Esports", "FURIA"] },
-  { slug: "imperium", name: "Imperium of Man", titles: ["Imperium of Man", "Imperium of Men"] },
-  { slug: "intz", name: "INTZ", titles: ["INTZ", "INTZ e-Sports"] },
-  { slug: "los", name: "LOS", titles: ["LOS", "Los Grandes"] },
-  { slug: "loud", name: "LOUD", titles: ["LOUD"] },
-  { slug: "lucky5", name: "Lucky 5", titles: ["Lucky 5", "Lucky5"] },
-  { slug: "liquid", name: "Team Liquid", titles: ["Team Liquid"] },
+  { slug: "blackdragons", name: "Black Dragons", titles: ["Black Dragons"], file: "Black Dragons 2025 darkmode.png" },
+  { slug: "faze", name: "FaZe Clan", titles: ["FaZe Clan"], file: "FaZe Esports 2026 darkmode.png" },
+  { slug: "w7m", name: "W7M esports", titles: ["W7m esports"] },
+  { slug: "furia", name: "FURIA", titles: ["FURIA"], file: "FURIA Esports allmode.png" },
+  { slug: "imperium", name: "Imperium of Man", titles: [], page: null },
+  { slug: "intz", name: "INTZ", titles: ["INTZ"], file: "INTZ 2026 allmode.png" },
+  { slug: "los", name: "LOS", titles: ["LOS"], file: "LOS full allmode.png" },
+  { slug: "loud", name: "LOUD", titles: ["LOUD"], file: "LOUD allmode.png" },
+  { slug: "lucky5", name: "Lucky 5", titles: [], page: null },
+  { slug: "liquid", name: "Team Liquid", titles: ["Team Liquid"], file: "Team Liquid 2024 darkmode.png" },
   // OCE
-  { slug: "6targets", name: "6Targets", titles: ["6Targets", "6 Targets"] },
-  { slug: "barbieboys", name: "Barbie Boys", titles: ["Barbie Boys"] },
-  { slug: "enterprise", name: "Enterprise Esports", titles: ["Enterprise Esports", "ENTERPRISE Esports"] },
-  { slug: "rival", name: "Rival Esports", titles: ["Rival Esports", "Rival"] },
+  { slug: "6targets", name: "6Targets Esports", titles: ["6Targets Esports"], file: "6Targets Esports allmode.png" },
+  { slug: "barbieboys", name: "Barbie Boys", titles: ["Barbie Boys"], file: "Barbie Boys darkmode.png" },
+  { slug: "enterprise", name: "ENTERPRISE Esports", titles: ["ENTERPRISE Esports"] },
+  { slug: "rival", name: "Rival Esports", titles: ["Rival Esports"], file: "Rival Esports new darkmode.png" },
   { slug: "shaiikademy", name: "Shaiikademy", titles: ["Shaiikademy"] },
   // China
-  { slug: "allgamers", name: "All Gamers", titles: ["All Gamers"] },
-  { slug: "edg", name: "EDward Gaming", titles: ["EDward Gaming", "Edward Gaming"] },
-  { slug: "onecoin", name: "One Coin", titles: ["One Coin"] },
+  { slug: "allgamers", name: "All Gamers", titles: ["All Gamers"], file: "All Gamers allmode.png" },
+  { slug: "edg", name: "EDward Gaming", titles: ["EDward Gaming"], file: "EDward Gaming 2017 darkmode.png" },
+  { slug: "onecoin", name: "One Coin", titles: ["One Coin"], file: "One Coin allmode.png" },
   // Asia
-  { slug: "daystar", name: "Daystar", titles: ["Daystar"] },
-  { slug: "sharper", name: "Sharper Esports", titles: ["Sharper Esports", "Sharper"] },
+  { slug: "daystar", name: "Daystar", titles: ["Daystar"], file: "Daystar 2026 allmode.png" },
+  { slug: "sharper", name: "Sharper Esports", titles: ["Sharper Esports"], file: "Sharper Esport 2021 allmode.png" },
   // APAC North
-  { slug: "fearx", name: "BNK FearX", titles: ["BNK FearX", "FearX"] },
-  { slug: "bemyenemy", name: "Be My Enemy", titles: ["Can You Be My Enemy", "Be My Enemy"] },
-  { slug: "kinotrope", name: "KINOTROPE", titles: ["KINOTROPE gaming", "KINOTROPE"] },
-  { slug: "rrx", name: "RRX", titles: ["RRX"] },
+  { slug: "fearx", name: "FEARX", titles: ["FEARX"], file: "FearX icon darkmode.png" },
+  { slug: "bemyenemy", name: "Can You Be My Enemy", titles: ["Can You Be My Enemy"], file: "Can You Be My Enemy allmode.png" },
+  { slug: "kinotrope", name: "KINOTROPE gaming", titles: ["KINOTROPE gaming"], file: "KINOTROPE gaming darkmode.png" },
+  { slug: "rrx", name: "RRX", titles: ["RRX"], file: "RRX darkmode.png" },
 ];
 
 const args = process.argv.slice(2);
@@ -144,7 +149,7 @@ async function fileUrl(file) {
 }
 
 async function save(url, slug) {
-  const wait = lastCall + 1000 - Date.now();
+  const wait = lastCall + 2100 - Date.now();
   if (wait > 0) await sleep(wait);
   lastCall = Date.now();
   const res = await fetch(url, { headers: { "User-Agent": UA } });
@@ -171,8 +176,15 @@ for (const team of TEAMS) {
     report.push({ ...team, status: "kept", note: "already on disk" });
     continue;
   }
+  if (team.page === null) {
+    report.push({ ...team, status: "missing", page: null, note: "no Liquipedia team page" });
+    console.log(`missing ${team.slug.padEnd(13)} no Liquipedia team page`);
+    continue;
+  }
   try {
-    const { page, file } = await findPage(team);
+    const { page, file } = team.file
+      ? { page: team.titles[0], file: team.file }
+      : await findPage(team);
     if (!file) {
       report.push({ ...team, status: "missing", page, note: page ? "team page has no logo file" : "no Liquipedia team page" });
       continue;

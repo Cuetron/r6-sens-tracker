@@ -35,7 +35,6 @@ const LOGO_SLUGS: Record<string, string> = {
   spacestation: "ssg",
   wildcard: "wildcard",
   wildcardgaming: "wildcard",
-  "1of30": "1of30",
 
   // SA
   blackdragons: "blackdragons",
@@ -45,12 +44,9 @@ const LOGO_SLUGS: Record<string, string> = {
   w7m: "w7m",
   furia: "furia",
   furiaesports: "furia",
-  imperiumofman: "imperium",
-  imperiumofmen: "imperium",
   intz: "intz",
   los: "los",
   loud: "loud",
-  lucky5: "lucky5",
   teamliquid: "liquid",
   liquid: "liquid",
 
