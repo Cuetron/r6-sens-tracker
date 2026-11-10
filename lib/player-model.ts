@@ -66,6 +66,12 @@ export const SUBREGIONS: Record<string, { name: string; league: string; logo: st
   'APAC NORTH': { name: 'APAC North', league: 'APAC North', logo: '/apacLogo.png' },
 };
 
+/** The badge of a player's league (subregion) or main region, used in place of a missing team logo. */
+export function regionBadge(p: Pick<Player, 'region' | 'subregion'>): string | null {
+  if (p.subregion && SUBREGIONS[p.subregion]) return SUBREGIONS[p.subregion].logo;
+  return p.region ? REGION_BADGES[p.region] : null;
+}
+
 // ---------------------------------------------------------------------
 // Raw row -> Player
 // ---------------------------------------------------------------------

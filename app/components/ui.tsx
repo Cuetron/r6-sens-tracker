@@ -63,18 +63,25 @@ export function RegionMark({
   );
 }
 
-/** Square team logo. Falls back to a 1px outlined square. */
+/**
+ * Square team logo. A team without a logo shows its region badge inside a 1px
+ * outlined square (so it never reads as the team's own logo), or its initials
+ * when there is no badge either.
+ */
 export function TeamLogo({
   team,
   kind = "team",
   size = 56,
   priority = false,
+  badge = null,
 }: {
   team: string | null;
   /** 'team' = a real team, 'free-agent' and 'retired' use an icon. */
   kind?: "team" | "free-agent" | "retired";
   size?: number;
   priority?: boolean;
+  /** Region or league badge to show when the team has no logo. */
+  badge?: string | null;
 }) {
   const src = kind === "team" ? teamLogo(team) : null;
   if (src) {
@@ -101,6 +108,17 @@ export function TeamLogo({
         <Icon name="user" size={Math.round(size * 0.4)} />
       ) : kind === "retired" ? (
         <Icon name="flag" size={Math.round(size * 0.4)} />
+      ) : badge ? (
+        <Image
+          src={badge}
+          alt=""
+          width={Math.round(size * 0.6)}
+          height={Math.round(size * 0.6)}
+          priority={priority}
+          sizes={`${Math.round(size * 0.6)}px`}
+          style={{ width: Math.round(size * 0.6), height: Math.round(size * 0.6) }}
+          className="object-contain"
+        />
       ) : (
         <span className="num" style={{ fontSize: size * 0.34 }}>
           {teamInitials(team)}

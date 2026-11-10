@@ -10,6 +10,7 @@ import {
   groupSlug,
   numberWord,
   playersForRegion,
+  regionBadge,
   regionSegment,
   type Player,
 } from '@/lib/player-model';
@@ -152,10 +153,10 @@ export default async function TeamRoster({
         <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
           <div className="flex min-w-0 flex-col gap-4 md:flex-row md:items-center md:gap-8">
             <div className="shrink-0 md:hidden">
-              <TeamLogo team={group ? null : title} kind={group ?? 'team'} size={72} priority />
+              <TeamLogo team={group ? null : title} kind={group ?? 'team'} size={72} priority badge={regionBadge(roster[0])} />
             </div>
             <div className="hidden shrink-0 md:block">
-              <TeamLogo team={group ? null : title} kind={group ?? 'team'} size={150} priority />
+              <TeamLogo team={group ? null : title} kind={group ?? 'team'} size={150} priority badge={regionBadge(roster[0])} />
             </div>
             <h1
               className="display min-w-0 [--avail:calc(100vw_-_40px)] [--name-max:60px] md:[--avail:calc(min(100vw_-_64px,1344px)_-_190px)] md:[--name-max:168px]"

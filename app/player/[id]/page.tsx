@@ -12,6 +12,7 @@ import {
   copySettingsText,
   longDate,
   regionLabel,
+  regionBadge,
   regionSegment,
   sensLabel,
   teamHref,
@@ -239,6 +240,7 @@ export default async function PlayerProfile({ params }: { params: Promise<{ id: 
                 kind={player.team ? 'team' : group}
                 size={32}
                 priority
+                badge={regionBadge(player)}
               />
               <p className="text-[18px] font-semibold md:text-[22px]">
                 {teamUrl ? (

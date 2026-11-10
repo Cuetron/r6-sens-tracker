@@ -11,6 +11,7 @@ import {
   SUBREGIONS,
   groupTeams,
   playersForRegion,
+  regionBadge,
   type Player,
   type RegionCode,
 } from '@/lib/player-model';
@@ -207,7 +208,7 @@ export default async function RegionTeams({ params }: { params: Promise<{ region
                 <RosterRow
                   key={t.team}
                   href={`/regions/${encodeURIComponent(code)}/${encodeURIComponent(t.team)}`}
-                  logo={<TeamLogo team={t.team} />}
+                  logo={<TeamLogo team={t.team} badge={regionBadge(t.players[0])} />}
                   title={t.team}
                   players={t.players}
                 />
