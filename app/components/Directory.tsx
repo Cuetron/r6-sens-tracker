@@ -245,8 +245,6 @@ function DirectoryView({
   const phoneCollapsed = limit === FIRST_PAGE;
   const phoneShown = phoneCollapsed ? Math.min(PHONE_FIRST_PAGE, total) : shown.length;
 
-  const hasFilters = !!(filters.q || filters.region || filters.team || filters.dpi || filters.verified);
-
   // Rows fade in when the filters change (not on first load).
   const rowClass = animate ? 'row-in' : '';
   const rowStyle = (i: number) => ({ ['--i' as string]: Math.min(i, 12) }) as React.CSSProperties;
