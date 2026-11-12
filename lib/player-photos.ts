@@ -1,16 +1,16 @@
 // Player photos shown on /player/[id].
 //
-// How to add one:
-// 1. Use a cut-out photo with a transparent background (PNG or WebP), cropped
-//    to the player from roughly the waist up. Portrait works best, about 4:5,
-//    at least 800px tall. On a Mac, right-click the image in Finder and choose
-//    Quick Actions > Remove Background.
-// 2. Save it as public/players/<file>, e.g. public/players/gunnar.png.
-// 3. Add a line below: the key is the player's id from the page URL
-//    (r6sens.com/player/113 -> 113).
+// The easy way: save cut-out photos into a folder, named after the player
+// (Gunnar.png) or their id from the page URL (113.png), then run
 //
-// Only use photos you have the right to publish, such as ones the player or
-// team sent you. Players without an entry get the no-photo layout.
+//   node scripts/import-player-photos.mjs ~/Downloads/m80
+//
+// That trims and resizes each photo into public/players/ and fills in the list
+// below. To add one by hand instead, put a transparent PNG or WebP in
+// public/players/ and add a line: the key is the player's id from the page URL
+// (r6sens.com/player/113 -> 113).
+//
+// Players without an entry get the no-photo layout.
 
 const PLAYER_PHOTOS: Record<number, string> = {
   // 113: "gunnar.png",
