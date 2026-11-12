@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
@@ -5,7 +6,9 @@ import CountUp from '@/app/components/CountUp';
 import Icon from '@/app/components/Icons';
 import PlayerActions from '@/app/components/PlayerActions';
 import { Breadcrumb, Dash, GearValue, SentMark, TeamLogo } from '@/app/components/ui';
+import { playerPhoto } from '@/lib/player-photos';
 import { getPlayers } from '@/lib/players';
+import { teamLogo } from '@/lib/teams';
 import {
   REGION_NAMES,
   SUBREGIONS,
@@ -201,11 +204,25 @@ export default async function PlayerProfile({ params }: { params: Promise<{ id: 
     { label: player.name },
   ];
 
+  // Right side of the hero: the player's photo, or else a faint team logo.
+  // Free agents and retired players without a photo keep the full-width name.
+  const photo = playerPhoto(player.id);
+  const logo = player.status === 'active' ? teamLogo(player.team) : null;
+  const art: { kind: 'photo' | 'logo'; src: string } | null = photo
+    ? { kind: 'photo', src: photo }
+    : logo
+      ? { kind: 'logo', src: logo }
+      : null;
+
   // Name size: as big as the page allows (240px desktop, 168px phone), shrinking for long names.
+  // Next to the photo or logo (tablet and up) the name gets 60% of the width.
   const nameChars = Math.max(player.name.length, 1);
   const nameStyle: React.CSSProperties = {
-    fontSize: `min(var(--name-max), calc(min(100vw - 40px, 1344px) / ${(nameChars * 0.5).toFixed(2)}))`,
+    fontSize: `min(var(--name-max), calc(var(--avail) / ${(nameChars * 0.5).toFixed(2)}))`,
   };
+  const availClass = art
+    ? '[--avail:min(100vw_-_40px,1344px)] md:[--avail:calc((100vw_-_64px)_*_0.6)] desk:[--avail:calc(min(100vw_-_96px,1344px)_*_0.6)]'
+    : '[--avail:min(100vw_-_40px,1344px)]';
 
   const gear: [string, string | null][] = [
     ['Mouse', player.mouse],
@@ -225,10 +242,51 @@ export default async function PlayerProfile({ params }: { params: Promise<{ id: 
       </div>
 
       {/* --- HERO --- */}
-      <header className="page mt-6 md:mt-10">
-        <div className="flex flex-wrap items-end gap-x-10 gap-y-5">
+      <header className="page relative mt-6 md:mt-10">
+        {/* Phone: the photo sits above the name and fades into it. */}
+        {photo && (
+          <div className="fade-bottom relative -mb-10 ml-auto h-[300px] w-[78%] max-w-[340px] md:hidden">
+            <Image src={photo} alt="" fill priority sizes="340px" className="object-contain object-bottom" />
+          </div>
+        )}
+
+        {/* Tablet and desktop: photo (or faint team logo) on the right, across from the
+            name, running past the header and fading out above the settings grid. */}
+        {art && (
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute right-5 top-0 -bottom-[112px] hidden w-[38%] md:right-8 desk:right-12 ${
+              art.kind === 'photo'
+                ? 'fade-bottom md:block'
+                : 'items-center justify-center p-10 md:flex desk:p-14'
+            }`}
+          >
+            {art.kind === 'photo' ? (
+              <Image
+                src={art.src}
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 1200px) 520px, 38vw"
+                className="object-contain object-bottom"
+              />
+            ) : (
+              <div className="relative h-full max-h-[300px] w-full">
+                <Image
+                  src={art.src}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1200px) 420px, 30vw"
+                  className="object-contain opacity-[0.07] grayscale"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`relative flex flex-wrap items-end gap-x-10 gap-y-5 ${art ? 'md:max-w-[60%]' : ''}`}>
           <h1
-            className="display [--name-max:168px] md:[--name-max:240px]"
+            className={`display [--name-max:168px] md:[--name-max:240px] ${availClass}`}
             style={nameStyle}
           >
             {player.name}
@@ -262,7 +320,7 @@ export default async function PlayerProfile({ params }: { params: Promise<{ id: 
       </header>
 
       {/* --- IN GAME --- */}
-      <section aria-labelledby="ingame-heading" className="page mt-12 md:mt-16">
+      <section aria-labelledby="ingame-heading" className="page relative mt-12 md:mt-16">
         <div className="flex items-end justify-between gap-6">
           <h2 id="ingame-heading" className="display text-[40px] md:text-[56px]">
             In game

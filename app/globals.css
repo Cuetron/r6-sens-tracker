@@ -163,6 +163,14 @@
     background: var(--line);
     vertical-align: middle;
   }
+
+  /* Player photo on /player/[id]: the bottom dissolves into the settings below.
+     This is a transparency mask on the photo, not a painted gradient, so the
+     page itself stays flat. */
+  .fade-bottom {
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  }
 }
 
 /* ------------------------------------------------------------------
