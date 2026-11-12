@@ -56,7 +56,6 @@ const LOGO_SLUGS: Record<string, string> = {
   enterpriseesports: "enterprise",
   enterprise: "enterprise",
   rivalesports: "rival",
-  shaiikademy: "shaiikademy",
 
   // China
   allgamers: "allgamers",
