@@ -1,18 +1,17 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import NavBar from '@/app/components/NavBar';
-import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { getPlayerIndex, inRegion } from '@/lib/players';
 
-// Refresh at most every 5 minutes instead of running a function on every visit
-// (see lib/supabase-server.ts).
-export const revalidate = 300;
+// Refreshed when /api/revalidate is called (Players changed), with an hourly
+// backstop (see lib/players.ts).
+export const revalidate = 3600;
 
 // Build the known region pages ahead of time. The page itself upper-cases the region
 // from the URL, so we do the same here. Anything else is still built on first visit.
 export async function generateStaticParams() {
   const known = ['NA', 'EU', 'SA', 'APAC', 'CHINA', 'OCE', 'ASIA', 'APAC NORTH'];
-  const { data } = await supabase.from('Players').select('region');
-  const fromDb = (data ?? []).map((p) => p.region).filter(Boolean) as string[];
+  const players = await getPlayerIndex();
+  const fromDb = players.map((p) => p.region).filter(Boolean) as string[];
   const regions = Array.from(new Set([...known, ...fromDb.map((r) => r.toUpperCase())]));
   return regions.map((region) => ({ region }));
 }
@@ -103,14 +102,9 @@ export default async function RegionTeams({ params }: { params: Promise<{ region
   // ====================================================================
   // 2. NORMAL REGION/SUBREGION BEHAVIOR (NA, EU, SA, CHINA, OCE, etc.)
   // ====================================================================
-  const { data, error } = await supabase
-    .from('Players')
-    .select('team')
-    .ilike('region', decodedRegion); 
-
-  if (error || !data) notFound();
-
-  const uniqueTeams = Array.from(new Set(data.map(p => p.team).filter(Boolean))).sort();
+  // Reuses the shared cached player list instead of a separate query per region.
+  const players = (await getPlayerIndex()).filter((p) => inRegion(p, decodedRegion));
+  const uniqueTeams = Array.from(new Set(players.map(p => p.team).filter(Boolean) as string[])).sort();
   const logoUrl = regionLogos[decodedRegion];
 
   // Helper variable to make breadcrumbs look a little nicer if it's an APAC subregion

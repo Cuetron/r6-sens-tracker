@@ -1,23 +1,16 @@
 import NavBar from '@/app/components/NavBar';
 import ContactWidget from './components/ContactWidget';
 import Directory from './components/Directory';
-import { supabaseServer } from '@/lib/supabase-server';
+import { getPlayerIndex } from '@/lib/players';
 
-// Rebuild this page at most every 5 minutes (see lib/supabase-server.ts).
-// The page no longer reads `searchParams`, so it can be served as static HTML
-// instead of running a function on every visit. Filtering happens in the browser.
-export const revalidate = 300;
+// Static page. Refreshed when /api/revalidate is called (Players changed), with
+// an hourly backstop (see lib/players.ts). Filtering happens in the browser.
+export const revalidate = 3600;
 
 export default async function Home() {
-  // One query for everything the page needs (previously two queries per visit).
-  const { data, error } = await supabaseServer
-    .from('Players')
-    .select('id, name, team, region')
-    .order('name', { ascending: true });
-
-  // Throwing (instead of rendering an empty list) means a temporary Supabase error
-  // can't get saved as the page for the next 5 minutes; the last good version stays up.
-  if (error) throw new Error(`Error fetching players: ${error.message}`);
+  // Shared cached query (see lib/players.ts). It throws on a Supabase error, so a
+  // temporary outage can't get saved as an empty page; the last good version stays up.
+  const players = await getPlayerIndex();
 
   return (
     <div className="relative min-h-screen bg-[#09090b] text-white font-sans selection:bg-[#5ce1e6] selection:text-black pb-32 overflow-x-hidden">
@@ -30,7 +23,7 @@ export default async function Home() {
         <NavBar />
 
         {/* Hero, filters and the player list (filters run in the browser) */}
-        <Directory players={data ?? []} />
+        <Directory players={players} />
 
         <ContactWidget />
       </div>

@@ -1,19 +1,18 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import NavBar from '@/app/components/NavBar';
-import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { getPlayerIndex, inRegion } from '@/lib/players';
 
-// Refresh at most every 5 minutes instead of running a function on every visit
-// (see lib/supabase-server.ts).
-export const revalidate = 300;
+// Refreshed when /api/revalidate is called (Players changed), with an hourly
+// backstop (see lib/players.ts).
+export const revalidate = 3600;
 
 // Build every current region/team roster page ahead of time. New teams still work:
 // they're built the first time someone opens them, then cached.
 export async function generateStaticParams() {
-  const { data } = await supabase.from('Players').select('region, team');
+  const players = await getPlayerIndex();
   const seen = new Set<string>();
   const params: { region: string; team: string }[] = [];
-  for (const p of data ?? []) {
+  for (const p of players) {
     if (!p.region || !p.team) continue;
     const region = String(p.region).toUpperCase();
     const key = `${region}|${p.team}`;
@@ -30,14 +29,11 @@ export default async function TeamRoster({ params }: { params: Promise<{ region:
   const decodedRegion = decodeURIComponent(region).toUpperCase();
   const decodedTeam = decodeURIComponent(team);
 
-  const { data: players, error } = await supabase
-    .from('Players')
-    .select('id, name')
-    .ilike('region', decodedRegion)
-    .eq('team', decodedTeam)
-    .order('name');
-
-  if (error || !players) notFound();
+  // Reuses the shared cached player list (already sorted by name) instead of a
+  // separate query per team.
+  const players = (await getPlayerIndex()).filter(
+    (p) => inRegion(p, decodedRegion) && p.team === decodedTeam
+  );
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white font-sans pb-32">
