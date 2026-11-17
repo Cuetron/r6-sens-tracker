@@ -35,19 +35,24 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Keeping ISR writes low
+## How player data goes live (static site)
 
-Player data is cached through `lib/players.ts`, which stores only the query
-results, so a refresh with unchanged data costs no ISR write. Pages refresh
-right away when Players changes, through a Supabase webhook, and otherwise
-once an hour as a backstop.
+Every page is built once per deploy and never regenerated, so visitors and bots
+cause no ISR writes. URLs that weren't built (unknown player ids, lowercase
+regions, etc.) return a plain 404.
 
-One-time setup:
+New Supabase data goes live through a rebuild:
 
-1. In Vercel, add an environment variable `REVALIDATE_SECRET` (any long random string) and redeploy.
-2. In Supabase, go to **Database → Webhooks → Create a new hook**:
-   - Table `Players`, events Insert / Update / Delete
-   - HTTP Request, `POST https://<your-domain>/api/revalidate`
-   - HTTP header `x-revalidate-secret: <the same secret>`
+- **Automatically, once a day:** a Vercel Cron Job (`vercel.json`) calls
+  `/api/rebuild`. That route compares the live Players data with the data the
+  current deploy was built with, and triggers a redeploy only if something changed.
+- **Right away:** `curl -H "Authorization: Bearer <CRON_SECRET>" https://<your-domain>/api/rebuild`
+  (add `?force=1` to redeploy even if nothing changed), or click Redeploy in the
+  Vercel dashboard.
 
-To refresh by hand: `curl -X POST -H "x-revalidate-secret: <secret>" https://<your-domain>/api/revalidate`
+One-time setup in Vercel (Project → Settings):
+
+1. **Git → Deploy Hooks:** create a hook for the `main` branch and copy its URL.
+2. **Environment Variables:** add `VERCEL_DEPLOY_HOOK_URL` (the hook URL) and
+   `CRON_SECRET` (any long random string, e.g. from `openssl rand -hex 32`).
+3. Redeploy so the variables take effect.

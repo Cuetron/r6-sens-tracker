@@ -1,20 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Shared Supabase client for SERVER code only.
+// Shared Supabase client for SERVER code only. Pages should read players through
+// lib/players.ts rather than querying with this client directly.
 //
-// Do NOT query with this client directly from a page. Use the cached helpers in
-// lib/players.ts instead. Here's why:
-//
-// A plain `fetch` cache stores the whole HTTP response, headers included, and
-// Supabase sends new `date` / `cf-ray` / request-id headers on every response.
-// So each time a cached entry refreshed, Vercel saw "new content" and charged
-// an ISR write, even if no player data had changed. The helpers in lib/players.ts
-// cache only the query *result* (plain JSON), so a refresh with unchanged data
-// produces identical output and Vercel does not charge an ISR write for it.
-//
+// Next.js caches fetches made during a build, and that cache can be carried over
+// into the next build. The header below is different for every build, so each
+// deploy is guaranteed to read fresh data from Supabase instead of reusing what an
+// earlier build saw. (Supabase ignores the header.)
+const BUILD_KEY = `${process.env.VERCEL_DEPLOYMENT_ID ?? 'local'}-${Date.now()}`;
+
 // Do NOT use this client in "use client" components (e.g. ContactWidget): the
-// contact form writes to Supabase and must never be cached.
+// contact form writes to Supabase with its own client.
 export const supabaseServer = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  { global: { headers: { 'x-build-key': BUILD_KEY } } }
 );

@@ -2,12 +2,16 @@ import Link from 'next/link';
 import NavBar from '@/app/components/NavBar';
 import { getPlayerIndex, inRegion } from '@/lib/players';
 
-// Refreshed when /api/revalidate is called (Players changed), with an hourly
-// backstop (see lib/players.ts).
-export const revalidate = 3600;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
 
-// Build the known region pages ahead of time. The page itself upper-cases the region
-// from the URL, so we do the same here. Anything else is still built on first visit.
+// Only paths built during the deploy exist. Anything else (bots guessing ids,
+// lowercase or misspelled URLs) gets a plain 404 instead of a new cached page.
+export const dynamicParams = false;
+
+// Build the known region pages during the deploy. The page itself upper-cases the
+// region from the URL, so we do the same here.
 export async function generateStaticParams() {
   const known = ['NA', 'EU', 'SA', 'APAC', 'CHINA', 'OCE', 'ASIA', 'APAC NORTH'];
   const players = await getPlayerIndex();

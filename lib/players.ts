@@ -1,21 +1,15 @@
-import { unstable_cache } from 'next/cache';
 import { supabaseServer } from './supabase-server';
 
 // All player data the pages read goes through these helpers.
 //
-// How this keeps ISR writes down:
-//  1. Only the query result (plain JSON) is cached, not the raw HTTP response.
-//     Unchanged data -> identical cached output -> Vercel charges no ISR write.
-//  2. The home page, region pages, team pages and generateStaticParams all share
-//     ONE cached query (getPlayerIndex) instead of one cache entry per page.
-//  3. Everything is tagged PLAYERS_TAG, so app/api/revalidate can refresh the
-//     site the moment Players changes. That means the timer below is only a
-//     backstop and can stay long.
+// The site is now FULLY STATIC: every page is built once, during the deploy,
+// and never regenerated afterwards. That means zero ISR writes from visitors or
+// bots. To publish new Supabase data, trigger a redeploy. The
+// .github/workflows/rebuild-site.yml workflow does this on a schedule and has a
+// "Run workflow" button for publishing right away.
 //
-// If you change REVALIDATE_SECONDS, also change the `export const revalidate = ...`
-// line in each page (Next.js needs those to be plain numbers in the page file).
-export const PLAYERS_TAG = 'players';
-export const REVALIDATE_SECONDS = 3600;
+// One Supabase query (getAllPlayers) feeds every page. Next.js reuses its result
+// across the pages built in the same deploy, so a build makes only a few requests.
 
 export type PlayerIndexRow = {
   id: number;
@@ -24,46 +18,41 @@ export type PlayerIndexRow = {
   region: string | null;
 };
 
-// id, name, team, region for every player, sorted by name (id breaks ties so the
-// order, and so the cached output, stays the same between refreshes).
-//
-// Errors are thrown, not returned: a thrown error is never cached, so a temporary
-// Supabase outage can't get saved as an empty list or a 404 page.
-export const getPlayerIndex = unstable_cache(
-  async (): Promise<PlayerIndexRow[]> => {
-    const { data, error } = await supabaseServer
-      .from('Players')
-      .select('id, name, team, region')
-      .order('name', { ascending: true })
-      .order('id', { ascending: true });
+// Every column for every player, sorted by name (id breaks ties).
+// Errors are thrown so a Supabase outage fails the build loudly; the previous
+// deployment then stays live instead of a site with an empty player list going out.
+export async function getAllPlayers() {
+  const { data, error } = await supabaseServer
+    .from('Players')
+    .select('*')
+    .order('name', { ascending: true })
+    .order('id', { ascending: true });
 
-    if (error) throw new Error(`Error fetching players: ${error.message}`);
-    return (data ?? []) as PlayerIndexRow[];
-  },
-  ['player-index'],
-  { tags: [PLAYERS_TAG], revalidate: REVALIDATE_SECONDS }
-);
+  if (error) throw new Error(`Error fetching players: ${error.message}`);
+  return data ?? [];
+}
+
+// Just what the home page, region and team pages need (keeps the home page small).
+export async function getPlayerIndex(): Promise<PlayerIndexRow[]> {
+  const players = await getAllPlayers();
+  return players.map((p) => ({ id: p.id, name: p.name, team: p.team, region: p.region }));
+}
 
 // Full row for one player, or null if there is no such player.
-export const getPlayerById = unstable_cache(
-  async (id: string) => {
-    // Player ids are numbers. Anything else is a 404 without asking Supabase.
-    if (!/^\d+$/.test(id)) return null;
-
-    const { data, error } = await supabaseServer
-      .from('Players')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (error) throw new Error(`Error fetching player ${id}: ${error.message}`);
-    return data;
-  },
-  ['player-by-id'],
-  { tags: [PLAYERS_TAG], revalidate: REVALIDATE_SECONDS }
-);
+export async function getPlayerById(id: string) {
+  const players = await getAllPlayers();
+  return players.find((p) => String(p.id) === id) ?? null;
+}
 
 // Same matching the old `.ilike('region', ...)` query did: case-insensitive equality.
 export function inRegion(player: PlayerIndexRow, region: string) {
   return (player.region ?? '').toUpperCase() === region.toUpperCase();
+}
+
+// Fingerprint of the whole Players table. app/api/data-version stores the value a
+// deploy was built with, and app/api/rebuild compares it with the live value so it
+// only triggers a redeploy when the data actually changed.
+export async function playersHash() {
+  const { createHash } = await import('node:crypto');
+  return createHash('sha256').update(JSON.stringify(await getAllPlayers())).digest('hex');
 }

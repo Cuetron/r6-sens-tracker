@@ -5,12 +5,16 @@ import NavBar from '@/app/components/NavBar';
 import { getPlayerById, getPlayerIndex } from '@/lib/players';
 import type { Metadata } from 'next';
 
-// Each player page is built once, then refreshed when /api/revalidate is called
-// (Players changed), with an hourly backstop (see lib/players.ts).
-export const revalidate = 3600;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
 
-// Build every current player's page ahead of time. Players added later still work:
-// their page is built the first time someone opens it, then cached like the others.
+// Only paths built during the deploy exist. Anything else (bots guessing ids,
+// lowercase or misspelled URLs) gets a plain 404 instead of a new cached page.
+export const dynamicParams = false;
+
+// Build every current player's page during the deploy. Players added later get a
+// page on the next rebuild.
 export async function generateStaticParams() {
   const players = await getPlayerIndex();
   return players.map((p) => ({ id: String(p.id) }));

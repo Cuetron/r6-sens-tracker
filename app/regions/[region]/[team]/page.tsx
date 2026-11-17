@@ -2,12 +2,16 @@ import Link from 'next/link';
 import NavBar from '@/app/components/NavBar';
 import { getPlayerIndex, inRegion } from '@/lib/players';
 
-// Refreshed when /api/revalidate is called (Players changed), with an hourly
-// backstop (see lib/players.ts).
-export const revalidate = 3600;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
 
-// Build every current region/team roster page ahead of time. New teams still work:
-// they're built the first time someone opens them, then cached.
+// Only paths built during the deploy exist. Anything else (bots guessing ids,
+// lowercase or misspelled URLs) gets a plain 404 instead of a new cached page.
+export const dynamicParams = false;
+
+// Build every current region/team roster page during the deploy. New teams get a
+// page on the next rebuild.
 export async function generateStaticParams() {
   const players = await getPlayerIndex();
   const seen = new Set<string>();

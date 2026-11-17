@@ -3,9 +3,10 @@ import ContactWidget from './components/ContactWidget';
 import Directory from './components/Directory';
 import { getPlayerIndex } from '@/lib/players';
 
-// Static page. Refreshed when /api/revalidate is called (Players changed), with
-// an hourly backstop (see lib/players.ts). Filtering happens in the browser.
-export const revalidate = 3600;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
+// Filtering happens in the browser.
 
 export default async function Home() {
   // Shared cached query (see lib/players.ts). It throws on a Supabase error, so a
