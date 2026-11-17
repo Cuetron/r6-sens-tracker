@@ -16,20 +16,19 @@ import {
   type RegionCode,
 } from '@/lib/player-model';
 
-// Refresh at most every 5 minutes instead of running a function on every visit
-// (see lib/supabase-server.ts).
-export const revalidate = 300;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
 
-// Build the known region pages ahead of time. The page itself upper-cases the region
-// from the URL, so we do the same here. Anything else is still built on first visit.
+// Only paths built during the deploy exist. Anything else (bots guessing ids,
+// lowercase or misspelled URLs) gets a plain 404 instead of a new cached page.
+export const dynamicParams = false;
+
+// Build the known region pages during the deploy, plus any other region value in
+// the data. A Supabase error fails the build (see lib/players.ts).
 export async function generateStaticParams() {
   const known = ['NA', 'EU', 'SA', 'APAC', 'CHINA', 'OCE', 'ASIA', 'APAC NORTH'];
-  let fromDb: string[] = [];
-  try {
-    fromDb = (await getPlayers()).map((p) => p.regionRaw).filter(Boolean);
-  } catch {
-    // If the database can't be reached while building, the known regions still get built.
-  }
+  const fromDb = (await getPlayers()).map((p) => p.regionRaw).filter(Boolean);
   return Array.from(new Set([...known, ...fromDb])).map((region) => ({ region }));
 }
 

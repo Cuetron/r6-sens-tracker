@@ -6,10 +6,10 @@ import { SentMark } from '@/app/components/ui';
 import { getPlayers } from '@/lib/players';
 import { MAIN_REGIONS, REGION_BADGES, REGION_NAMES, relativeDay } from '@/lib/player-model';
 
-// Rebuild this page at most every 5 minutes (see lib/supabase-server.ts).
-// The page does not read `searchParams`, so it is served as static HTML
-// instead of running a function on every visit. Filtering happens in the browser.
-export const revalidate = 300;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
+// Filtering happens in the browser.
 
 export default async function Home() {
   // One query for everything the page needs. A Supabase error throws (see lib/players.ts),

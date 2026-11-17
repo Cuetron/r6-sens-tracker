@@ -5,8 +5,9 @@ import Icon from '@/app/components/Icons';
 import { getPlayers } from '@/lib/players';
 import { MAIN_REGIONS, REGION_BADGES, REGION_NAMES, groupTeams } from '@/lib/player-model';
 
-// Refresh at most every 5 minutes (see lib/supabase-server.ts).
-export const revalidate = 300;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
 
 export const metadata: Metadata = {
   title: 'Regions: pro Siege settings by scene',

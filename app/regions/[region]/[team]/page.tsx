@@ -15,22 +15,20 @@ import {
   type Player,
 } from '@/lib/player-model';
 
-// Refresh at most every 5 minutes instead of running a function on every visit
-// (see lib/supabase-server.ts).
-export const revalidate = 300;
+// Fully static: built once per deploy, never regenerated, so visitors cause no
+// ISR writes. New data goes live on the next rebuild (see lib/players.ts).
+export const revalidate = false;
+
+// Only paths built during the deploy exist. Anything else (bots guessing ids,
+// lowercase or misspelled URLs) gets a plain 404 instead of a new cached page.
+export const dynamicParams = false;
 
 const FULL_ROSTER = 5;
 
-// Build every current region/team roster page ahead of time. New teams still work:
-// they're built the first time someone opens them, then cached.
+// Build every current region/team roster page during the deploy. New teams get a
+// page on the next rebuild. A Supabase error fails the build (see lib/players.ts).
 export async function generateStaticParams() {
-  let players: Player[] = [];
-  try {
-    players = await getPlayers();
-  } catch {
-    // If the database can't be reached while building, pages are built on first visit instead.
-    return [];
-  }
+  const players = await getPlayers();
   const seen = new Set<string>();
   const params: { region: string; team: string }[] = [];
   const add = (region: string, team: string) => {
