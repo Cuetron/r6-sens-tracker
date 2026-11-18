@@ -77,27 +77,36 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 // ---------------------------------------------------------------------
 
 // Big values shrink on narrow screens so long values such as "12 / 12" never overflow.
-const VALUE_BASE =
-  'num block text-[56px] md:text-[clamp(48px,7.2vw,104px)] desk:text-[104px]';
-const VALUE_LONG =
-  'num block text-[40px] md:text-[clamp(34px,5.2vw,76px)] desk:text-[104px]';
+// Values are as big as the design allows (56px phone, up to 104px desktop) and
+// shrink to fit their box on one line, so a long value like 0.00223 or 77 / 77
+// never overflows or wraps. 0.62em is a safe average width per character in
+// Barlow Condensed; cqw is 1% of the box's own width (the box is a container).
+const VALUE_MAX = '[--v-max:56px] md:[--v-max:clamp(48px,7.2vw,104px)] desk:[--v-max:104px]';
+function valueSize(value: string): React.CSSProperties {
+  const perChar = 100 / (Math.max(value.length, 1) * 0.62);
+  return { fontSize: `min(var(--v-max), ${perChar.toFixed(2)}cqw)` };
+}
 
 function Cell({
   label,
   value,
   caption,
-  phoneOrder,
+  wide = false,
 }: {
   label: string;
   value: string | null;
   caption?: string;
-  /** Phone shows the sheet 2 by 4 in a different order than desktop. */
-  phoneOrder: string;
+  /** Takes two columns (used for sensitivity, the headline value). */
+  wide?: boolean;
 }) {
   return (
-    <div className={`${phoneOrder} flex min-h-[170px] flex-col justify-between bg-ground p-5 md:order-none md:min-h-[186px] md:p-6`}>
+    <div
+      className={`flex min-h-[170px] min-w-0 flex-col justify-between bg-ground p-5 md:min-h-[186px] md:p-6 ${
+        wide ? 'col-span-2' : ''
+      }`}
+    >
       <p className="text-[13px] text-muted md:text-[14px]">{label}</p>
-      <div className="mt-6">
+      <div className={`@container mt-6 ${VALUE_MAX}`}>
         {value === null ? (
           <>
             <span className="dash" style={{ width: 48, height: 6 }} role="img" aria-label="Not shared yet" />
@@ -105,7 +114,9 @@ function Cell({
           </>
         ) : (
           <>
-            <CountUp text={value} className={value.length > 5 ? VALUE_LONG : VALUE_BASE} />
+            <div style={valueSize(value)}>
+              <CountUp text={value} className="num block whitespace-nowrap" />
+            </div>
             {caption && <p className="mt-2 text-[12px] text-muted md:text-[13px]">{caption}</p>}
           </>
         )}
@@ -230,6 +241,7 @@ export default async function PlayerProfile({ params }: { params: Promise<{ id: 
     ['Switches', player.switches],
     ['Headset', player.headset],
     ['In-ears', player.inEars],
+    ['Monitor', player.monitor],
   ];
 
   return (
@@ -329,35 +341,20 @@ export default async function PlayerProfile({ params }: { params: Promise<{ id: 
           </p>
         </div>
 
-        {/* 4 by 2 on tablet and desktop, 2 by 4 on phone */}
+        {/* Same order as Copy settings. Sensitivity spans two columns, so tablet and
+            desktop show 4 by 2 and phone shows sensitivity on top, then 2 by 3. */}
         <div className="mt-6 grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-4">
-          <Cell label="Sensitivity" value={sens} caption="horizontal / vertical" phoneOrder="order-1" />
-          <Cell label="ADS 1x" value={player.ads1x !== null ? String(player.ads1x) : null} phoneOrder="order-3" />
-          <Cell label="ADS 2.5x" value={player.ads25x !== null ? String(player.ads25x) : null} phoneOrder="order-4" />
+          <Cell label="Sensitivity" value={sens} caption="horizontal / vertical" wide />
+          <Cell label="ADS 1x" value={player.ads1x !== null ? String(player.ads1x) : null} />
+          <Cell label="ADS 2.5x" value={player.ads25x !== null ? String(player.ads25x) : null} />
+          <Cell label="DPI" value={player.dpi !== null ? String(player.dpi) : null} />
           <Cell
             label="Multiplier"
             value={player.multiplier}
             caption={player.multiplier === '0.02' ? 'default' : undefined}
-            phoneOrder="order-7"
           />
-          <Cell label="DPI" value={player.dpi !== null ? String(player.dpi) : null} phoneOrder="order-2" />
-          <Cell label="Field of view" value={player.fov !== null ? String(player.fov) : null} phoneOrder="order-5" />
-          <Cell label="Aspect ratio" value={player.aspectRatio} phoneOrder="order-6" />
-
-          {/* Monitor is free text (e.g. "BenQ XL2566K+"), so it is set smaller than the numbers. */}
-          <div className="order-8 flex min-h-[170px] flex-col justify-between bg-ground p-5 md:order-none md:min-h-[186px] md:p-6">
-            <p className="text-[13px] text-muted md:text-[14px]">Monitor</p>
-            <div className="mt-6">
-              {player.monitor ? (
-                <p className="num text-[28px] md:text-[36px]">{player.monitor}</p>
-              ) : (
-                <>
-                  <span className="dash" style={{ width: 48, height: 6 }} role="img" aria-label="Not shared yet" />
-                  <p className="mt-3 text-[12px] text-muted md:text-[13px]">not shared yet</p>
-                </>
-              )}
-            </div>
-          </div>
+          <Cell label="Field of view" value={player.fov !== null ? String(player.fov) : null} />
+          <Cell label="Aspect ratio" value={player.aspectRatio} />
         </div>
       </section>
 
