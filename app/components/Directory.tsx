@@ -1,15 +1,17 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Icon from '@/app/components/Icons';
 import PlayerFilters, { type FilterKey, type TabCounts } from '@/app/components/PlayerFilters';
-import { RegionMark, SentMark, Dash } from '@/app/components/ui';
+import { RegionMark, SentMark, Dash, TeamLogo } from '@/app/components/ui';
 import {
   MAIN_REGIONS,
   SUBREGIONS,
   dpiBucket,
+  regionBadge,
   regionLabel,
   sensLabel,
   shortDate,
@@ -35,12 +37,16 @@ export type DirectoryPlayer = Pick<
   | 'ads25x'
   | 'fov'
   | 'aspectRatio'
+  | 'multiplier'
   | 'mouse'
   | 'updatedAt'
   | 'source'
->;
+> & {
+  /** Headshot URL (see lib/player-photos.ts), or null. */
+  photo: string | null;
+};
 
-type SortKey = 'name' | 'region' | 'dpi' | 'sens' | 'ads1x' | 'ads25x' | 'fov' | 'ratio' | 'mouse' | 'updated';
+type SortKey = 'name' | 'region' | 'dpi' | 'sens' | 'ads1x' | 'ads25x' | 'fov' | 'mult' | 'ratio' | 'mouse' | 'updated';
 type Dir = 'asc' | 'desc';
 
 type Filters = {
@@ -67,7 +73,7 @@ const FIRST_PAGE = 12; // rows in the first page (and in the server-rendered HTM
 const PHONE_FIRST_PAGE = 6; // cards shown on a phone before "Show more"
 const PAGE_STEP = 50;
 
-const SORT_KEYS: SortKey[] = ['name', 'region', 'dpi', 'sens', 'ads1x', 'ads25x', 'fov', 'ratio', 'mouse', 'updated'];
+const SORT_KEYS: SortKey[] = ['name', 'region', 'dpi', 'sens', 'ads1x', 'ads25x', 'fov', 'mult', 'ratio', 'mouse', 'updated'];
 
 // ---------------------------------------------------------------------
 // URL <-> filters. A filtered view can be shared as a link.
@@ -133,6 +139,10 @@ function sortValue(p: DirectoryPlayer, key: SortKey): string | number | null {
     }
     case 'ads1x':
       return p.ads1x;
+    case 'mult': {
+      const n = p.multiplier === null ? NaN : parseFloat(p.multiplier);
+      return Number.isFinite(n) ? n : null;
+    }
     case 'ads25x':
       return p.ads25x;
     case 'fov':
@@ -186,18 +196,49 @@ type Column = {
   className?: string;
 };
 
+// Region sits under the player's name (the tabs above filter by it), which
+// leaves room for the multiplier and a wider mouse column.
 const COLUMNS: Column[] = [
-  { key: 'name', label: 'Player' },
-  { key: 'region', label: 'Region' },
-  { key: 'dpi', label: 'DPI' },
-  { key: 'sens', label: 'Sens H / V' },
-  { key: 'ads1x', label: 'ADS 1x' },
-  { key: 'ads25x', label: 'ADS 2.5x' },
-  { key: 'fov', label: 'FOV' },
-  { key: 'ratio', label: 'Ratio', className: 'hidden desk:table-cell' },
-  { key: 'mouse', label: 'Mouse', className: 'hidden desk:table-cell' },
-  { key: 'updated', label: 'Updated' },
+  { key: 'name', label: 'Player', className: 'w-[27%] desk:w-[21%]' },
+  { key: 'dpi', label: 'DPI', className: 'desk:w-[7%]' },
+  { key: 'sens', label: 'Sens H / V', className: 'desk:w-[9%]' },
+  { key: 'ads1x', label: 'ADS 1x', className: 'desk:w-[6.5%]' },
+  { key: 'ads25x', label: 'ADS 2.5x', className: 'desk:w-[7%]' },
+  { key: 'fov', label: 'FOV', className: 'desk:w-[5.5%]' },
+  { key: 'mult', label: 'Multiplier', className: 'hidden desk:table-cell desk:w-[7.5%]' },
+  { key: 'ratio', label: 'Ratio', className: 'hidden desk:table-cell desk:w-[6%]' },
+  { key: 'mouse', label: 'Mouse', className: 'hidden desk:table-cell desk:w-[12%]' },
+  { key: 'updated', label: 'Updated', className: 'desk:w-[6.5%]' },
 ];
+
+/** Headshot when we have one, otherwise the team logo (or region badge). */
+function Avatar({ p, size }: { p: DirectoryPlayer; size: number }) {
+  if (p.photo) {
+    // Photos are waist-up portraits: zoom in on the top so the face fills the square.
+    return (
+      <span
+        className="relative block shrink-0 overflow-hidden border border-line bg-panel"
+        style={{ width: size, height: size }}
+      >
+        <Image
+          src={p.photo}
+          alt=""
+          fill
+          sizes={`${Math.round(size * 1.8)}px`}
+          className="origin-top scale-[1.8] object-cover object-top"
+        />
+      </span>
+    );
+  }
+  return (
+    <TeamLogo
+      team={p.team}
+      kind={p.team ? 'team' : p.status === 'retired' ? 'retired' : 'free-agent'}
+      size={size}
+      badge={regionBadge(p)}
+    />
+  );
+}
 
 function Num({ value }: { value: number | string | null }) {
   return value === null || value === '' ? <Dash label="Not on file" /> : <>{value}</>;
@@ -250,7 +291,7 @@ function DirectoryView({
   const rowStyle = (i: number) => ({ ['--i' as string]: Math.min(i, 12) }) as React.CSSProperties;
 
   return (
-    <section aria-labelledby="database-heading" className="page mt-16 md:mt-20">
+    <section aria-labelledby="database-heading" className="page mt-10 md:mt-12">
       <h2 id="database-heading" className="sr-only">
         Player database
       </h2>
@@ -287,9 +328,7 @@ function DirectoryView({
                         key={col.key}
                         scope="col"
                         aria-sort={active ? (filters.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
-                        className={`px-2 pb-3 text-[13px] font-normal first:pl-4 ${
-                          col.key === 'name' ? 'w-[22%]' : ''
-                        } ${col.className ?? ''}`}
+                        className={`px-2 pb-3 text-[13px] font-normal first:pl-4 ${col.className ?? ''}`}
                       >
                         <button
                           type="button"
@@ -310,7 +349,7 @@ function DirectoryView({
                       </th>
                     );
                   })}
-                  <th scope="col" className="w-10 pb-3">
+                  <th scope="col" className="w-10 pb-3 desk:w-[11%]">
                     <span className="sr-only">Open player</span>
                   </th>
                 </tr>
@@ -323,22 +362,27 @@ function DirectoryView({
                     className={`${rowClass} relative h-[76px] transition-colors duration-[120ms] odd:bg-panel hover:bg-line focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-accent`}
                   >
                     <td className="px-2 pl-4">
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/player/${p.id}`}
-                          // Prefetching is off on purpose: with ~200 links on this page, the default
-                          // prefetch-on-scroll fired a request for every visible row on every visit.
-                          prefetch={false}
-                          className="display truncate text-[30px] leading-none after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
-                        >
-                          {p.name}
-                        </Link>
-                        {p.source === 'player' && <SentMark iconOnly />}
+                      <div className="flex items-center gap-3">
+                        <Avatar p={p} size={44} />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <Link
+                              href={`/player/${p.id}`}
+                              // Prefetching is off on purpose: with ~200 links on this page, the default
+                              // prefetch-on-scroll fired a request for every visible row on every visit.
+                              prefetch={false}
+                              className="display truncate text-[30px] leading-none after:absolute after:inset-0 after:content-[''] focus-visible:outline-none"
+                            >
+                              {p.name}
+                            </Link>
+                            {p.source === 'player' && <SentMark iconOnly />}
+                          </div>
+                          <div className="mt-1.5 flex min-w-0 items-center gap-2 text-[13px] text-muted">
+                            <span className="truncate">{teamLabel(p)}</span>
+                            <RegionMark region={p.region} label={regionLabel(p)} className="shrink-0 text-muted" />
+                          </div>
+                        </div>
                       </div>
-                      <div className="mt-1 truncate text-[13px] text-muted">{teamLabel(p)}</div>
-                    </td>
-                    <td className="px-2">
-                      <RegionMark region={p.region} label={regionLabel(p)} />
                     </td>
                     <td className="num px-2 text-[28px]">
                       <Num value={p.dpi} />
@@ -355,6 +399,13 @@ function DirectoryView({
                     <td className="num px-2 text-[28px]">
                       <Num value={p.fov} />
                     </td>
+                    <td
+                      className={`num hidden px-2 desk:table-cell ${
+                        (p.multiplier?.length ?? 0) > 5 ? 'text-[20px]' : 'text-[28px]'
+                      }`}
+                    >
+                      <Num value={p.multiplier} />
+                    </td>
                     <td className="num hidden px-2 text-[28px] desk:table-cell">
                       <Num value={p.aspectRatio} />
                     </td>
@@ -364,8 +415,12 @@ function DirectoryView({
                     <td className="px-2 text-[13px] text-muted">
                       {shortDate(p.updatedAt) ?? <Dash label="Not on file" />}
                     </td>
-                    <td className="pr-3 text-muted">
-                      <Icon name="chevron-right" size={18} />
+                    <td className="pr-3 text-right text-accent">
+                      <span className="hidden items-center justify-end gap-1 text-[13px] font-semibold desk:inline-flex">
+                        Setup &amp; gear
+                        <Icon name="chevron-right" size={16} />
+                      </span>
+                      <Icon name="chevron-right" size={18} className="desk:hidden" />
                     </td>
                   </tr>
                 ))}
@@ -388,17 +443,25 @@ function DirectoryView({
                   prefetch={false}
                   className="block px-4 py-4 after:absolute after:inset-0 after:content-['']"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="display text-[30px] leading-none">{p.name}</span>
-                      {p.source === 'player' && <SentMark iconOnly />}
+                  <div className="flex items-center gap-3">
+                    <Avatar p={p} size={48} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="display truncate text-[30px] leading-none">{p.name}</span>
+                          {p.source === 'player' && <SentMark iconOnly />}
+                        </div>
+                        <span className="inline-flex shrink-0 items-center gap-0.5 text-[12px] font-semibold text-accent">
+                          Setup &amp; gear
+                          <Icon name="chevron-right" size={14} />
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex items-center gap-2 text-[13px] text-muted">
+                        <RegionMark region={p.region} label={regionLabel(p)} className="text-muted" />
+                        <span aria-hidden="true">&middot;</span>
+                        <span className="truncate">{teamLabel(p)}</span>
+                      </div>
                     </div>
-                    <Icon name="chevron-right" size={18} className="text-muted" />
-                  </div>
-                  <div className="mt-2 flex items-center gap-2 text-[13px] text-muted">
-                    <RegionMark region={p.region} label={regionLabel(p)} className="text-muted" />
-                    <span aria-hidden="true">&middot;</span>
-                    <span className="truncate">{teamLabel(p)}</span>
                   </div>
                   <dl className="mt-4 grid grid-cols-4 gap-2">
                     {[

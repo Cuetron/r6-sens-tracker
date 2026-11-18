@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Directory, { type DirectoryPlayer } from './components/Directory';
 import Icon from '@/app/components/Icons';
 import { SentMark } from '@/app/components/ui';
+import { playerPhoto } from '@/lib/player-photos';
 import { getPlayers } from '@/lib/players';
 import { MAIN_REGIONS, REGION_BADGES, REGION_NAMES, relativeDay } from '@/lib/player-model';
 
@@ -32,9 +33,11 @@ export default async function Home() {
     ads25x: p.ads25x,
     fov: p.fov,
     aspectRatio: p.aspectRatio,
+    multiplier: p.multiplier,
     mouse: p.mouse,
     updatedAt: p.updatedAt,
     source: p.source,
+    photo: playerPhoto(p.id),
   }));
 
   // Hero facts come from the data, never hard-coded.
@@ -55,9 +58,9 @@ export default async function Home() {
   return (
     <main id="main">
       {/* --- HERO --- */}
-      <header className="page pt-12 md:pt-20 desk:pt-28">
+      <header className="page pt-8 md:pt-12 desk:pt-14">
         <div className="desk:grid desk:grid-cols-[1fr_380px] desk:items-end desk:gap-12">
-          <h1 className="display text-[60px] md:text-[104px] desk:text-[136px]">
+          <h1 className="display text-[52px] md:text-[80px] desk:text-[104px]">
             Pro settings,
             <br />
             <span className="text-accent">
@@ -68,7 +71,7 @@ export default async function Home() {
           <div className="mt-6 desk:mt-0 desk:pb-3">
             <p className="max-w-[420px] text-base leading-normal text-muted md:text-lg md:leading-[1.5]">
               Sensitivity, DPI, FOV and gear for every Rainbow Six Siege pro. Most entries come
-              straight from the player.
+              straight from the player. Open any player for their full setup and gear.
             </p>
             <dl className="mt-6 flex gap-8 md:mt-8">
               <div className="flex flex-col">
